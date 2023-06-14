@@ -2,8 +2,9 @@
   "name": "solid-nodejs-crud",
   "version": "1.0.0",
   "description": "Basic CRUD with Node.js using SOLID principles",
-  "main": "",
+  "main": "./src/server.js",
   "scripts": {
+    "start:dev": "node ./src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Lucas 'luCAO' Cunha",
