@@ -1,15 +1,14 @@
 {
-  "name": "testedev",
+  "name": "solid-nodejs-crud",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Basic CRUD with Node.js using SOLID principles",
+  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Lucas 'luCAO' Cunha",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.2",
     "express": "^4.18.2"
   }
 }
