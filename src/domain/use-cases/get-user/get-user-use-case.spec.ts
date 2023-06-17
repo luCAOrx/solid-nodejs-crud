@@ -1,6 +1,6 @@
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
-import { RegisterUserUseCase } from "../register-user-use-case";
+import { RegisterUserUseCase } from "../register-user/register-user-use-case";
 import { UserNotFoundError } from "./errors/user-not-found-error";
 import { GetUserUseCase } from "./get-user-use-case";
 
