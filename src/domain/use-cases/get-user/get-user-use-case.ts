@@ -1,7 +1,7 @@
 import { type User } from "@domain/entities/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { UserNotFoundError } from "./errors/user-not-found-error";
+import { UserNotFoundError } from "../errors/user-not-found-error";
 
 interface GetUserRequest {
   id: string;
