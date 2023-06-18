@@ -4,10 +4,10 @@ import { Name } from "./name";
 import { Password } from "./password";
 import { User } from "./user";
 
-const name = Name.create("Lucas").value as unknown as Name;
-const job = Job.create("Development").value as unknown as Job;
-const email = Email.create("lucas@example.com").value as unknown as Email;
-const password = Password.create("1234567890").value as unknown as Password;
+const name = Name.create("Lucas").value;
+const job = Job.create("Development").value;
+const email = Email.create("lucas@example.com").value;
+const password = Password.create("1234567890").value;
 
 describe("User model", () => {
   it("should be able to create a new user", () => {
