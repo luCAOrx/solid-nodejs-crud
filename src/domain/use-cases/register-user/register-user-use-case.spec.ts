@@ -1,7 +1,3 @@
-import { type Email } from "@domain/entities/email";
-import { type Job } from "@domain/entities/job";
-import { type Name } from "@domain/entities/name";
-import { type Password } from "@domain/entities/password";
 import { User } from "@domain/entities/user";
 import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
@@ -42,10 +38,10 @@ describe("Register user use case", () => {
 
   it("should not be able to register new user with existing email", async () => {
     const user = User.create({
-      name: "Lucas" as unknown as Name,
-      job: "Development" as unknown as Job,
-      email: "lucas@example.com" as unknown as Email,
-      password: "1234567890" as unknown as Password,
+      name: "Lucas",
+      job: "Development",
+      email: "lucas@example.com",
+      password: "1234567890",
     });
 
     await inMemoryUserDatabase.create(user);
