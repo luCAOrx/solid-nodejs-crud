@@ -1,15 +1,10 @@
 import { randomUUID } from "node:crypto";
 
-import { type Email } from "./email";
-import { type Job } from "./job";
-import { type Name } from "./name";
-import { type Password } from "./password";
-
 interface UserProps {
-  name: Name;
-  job: Job;
-  email: Email;
-  password: Password;
+  name: string;
+  job: string;
+  email: string;
+  password: string;
 }
 
 export class User {
