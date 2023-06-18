@@ -33,14 +33,14 @@ export class RegisterUserUseCase {
     const passwordOrError = Password.create(password);
 
     const user = User.create({
-      name: nameOrError.value as unknown as Name,
-      job: jobOrError.value as unknown as Job,
-      email: emailOrError.value as unknown as Email,
-      password: passwordOrError.value as unknown as Password,
+      name: nameOrError.value,
+      job: jobOrError.value,
+      email: emailOrError.value,
+      password: passwordOrError.value,
     });
 
     const userAlreadyExists = await this.userRepository.exists(
-      user.props.email.value
+      user.props.email
     );
 
     if (userAlreadyExists) throw new UserAlreadyExistsError();
