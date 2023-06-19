@@ -18,7 +18,7 @@ interface UpdateUserRequest {
 }
 
 interface UpdateUserResponse {
-  user: User;
+  updatedUser: User;
 }
 
 export class UpdateUserUseCase {
@@ -44,13 +44,15 @@ export class UpdateUserUseCase {
         email: emailOrError.value,
         password: passwordOrError.value,
       },
-      userFound.id
+      userFound.id,
+      userFound.read_time,
+      new Date()
     );
 
     userFound.props = user.props;
 
-    await this.userRepository.update(userFound);
+    const updatedUser = await this.userRepository.update(userFound);
 
-    return { user };
+    return { updatedUser };
   }
 }
