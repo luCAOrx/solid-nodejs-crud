@@ -10,40 +10,38 @@ describe("Update user use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
   const updateUserUseCase = new UpdateUserUseCase(inMemoryUserDatabase);
 
-  const user = {
-    name: "Marcela",
-    job: "Seller",
-    email: "marcela@example.com",
-    password: "12345678900",
-  };
-
   it("should be able update user", async () => {
-    const { id } = await new MakeUserFactory().toDomain({
+    const user = await new MakeUserFactory().toDomain({
       inMemoryDatabase: inMemoryUserDatabase,
     });
 
-    const updatedUser = await updateUserUseCase.execute({
-      id,
+    const { updatedUser } = await updateUserUseCase.execute({
+      id: user.id,
       user: {
-        ...user,
-        job: "Seller",
+        ...user.props,
+        job: "Driver",
       },
     });
 
-    expect(inMemoryUserDatabase.users[0].props.job).toStrictEqual("seller");
-    expect(inMemoryUserDatabase.users[0]).toStrictEqual(updatedUser.user);
+    expect(inMemoryUserDatabase.users[0].id).toStrictEqual(updatedUser.id);
+    expect(inMemoryUserDatabase.users[0].props.job).toStrictEqual("driver");
+    expect(inMemoryUserDatabase.users[0]).toStrictEqual(updatedUser);
     expect(inMemoryUserDatabase.users).toHaveLength(1);
     expect(updatedUser).toBeTruthy();
     expect(updatedUser).toStrictEqual(updatedUser);
-    expect(updatedUser.user).toBeInstanceOf(User);
+    expect(updatedUser).toBeInstanceOf(User);
   });
 
   it("should not be able update user that non exists", async () => {
+    const user = await new MakeUserFactory().toDomain({
+      inMemoryDatabase: inMemoryUserDatabase,
+    });
+
     await expect(async () => {
       await updateUserUseCase.execute({
         id: "1234567890000000",
         user: {
-          ...user,
+          ...user.props,
           job: "Singer",
         },
       });
