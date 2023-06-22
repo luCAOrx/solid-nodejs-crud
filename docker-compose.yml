@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  solid-nodejs-crud-database:
+    image: ${DATABASE_CONTAINER_IMAGE}
+    hostname: database
+    container_name: ${DATABASE_CONTAINER_NAME}
+    restart: always
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DATABASE: ${DATABASE_NAME}
+
+  solid-nodejs-crud-server:
+    image: ${SERVER_CONTAINER_IMAGE}
+    hostname: server
+    container_name: ${SERVER_CONTAINER_NAME}
+    restart: always
+    depends_on:
+      - solid-nodejs-crud-database
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/app
+    working_dir: /usr/app
+    command: npm run start:dev
