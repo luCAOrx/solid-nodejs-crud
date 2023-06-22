@@ -1,8 +1,11 @@
+import request from "supertest";
+
 import { Email } from "@domain/entities/email";
 import { Job } from "@domain/entities/job";
 import { Name } from "@domain/entities/name";
 import { Password } from "@domain/entities/password";
 import { User } from "@domain/entities/user";
+import { app } from "@infra/http/app";
 import { type InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
 interface UserProps {
@@ -38,5 +41,21 @@ export class MakeUserFactory {
     await inMemoryDatabase.create(user);
 
     return user;
+  }
+
+  public async toHttp({
+    override,
+  }: {
+    override?: Override;
+  }): Promise<request.Test> {
+    return await request(app)
+      .post("/users/register")
+      .send({
+        name: "John Doe",
+        job: "Doctor",
+        email: "johndoe@example.com",
+        password: "1234567890",
+        ...override,
+      });
   }
 }
