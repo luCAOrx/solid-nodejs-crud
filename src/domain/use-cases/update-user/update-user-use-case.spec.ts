@@ -4,6 +4,7 @@ import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
+import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
 import { UpdateUserUseCase } from "./update-user-use-case";
 
 describe("Update user use case", () => {
@@ -19,6 +20,7 @@ describe("Update user use case", () => {
       id: user.id,
       user: {
         ...user.props,
+        email: "eike@example.com",
         job: "Driver",
       },
     });
@@ -51,7 +53,6 @@ describe("Update user use case", () => {
   it("should not be able update user with invalid data", async () => {
     const { id } = await new MakeUserFactory().toDomain({
       inMemoryDatabase: inMemoryUserDatabase,
-      override: { email: "joejoe@example.com" },
     });
 
     await expect(async () => {
@@ -65,5 +66,23 @@ describe("Update user use case", () => {
         },
       });
     }).rejects.toThrowError(NameShouldNotBeEmptyError);
+  });
+
+  it("should not be able update user with existing email", async () => {
+    const { id } = await new MakeUserFactory().toDomain({
+      inMemoryDatabase: inMemoryUserDatabase,
+    });
+
+    await expect(async () => {
+      await updateUserUseCase.execute({
+        id,
+        user: {
+          name: "Joe Blank",
+          job: "Doctor",
+          email: "joe@example.com",
+          password: "1234567890",
+        },
+      });
+    }).rejects.toThrowError(UserAlreadyExistsError);
   });
 });
