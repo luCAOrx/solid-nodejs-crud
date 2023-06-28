@@ -1,4 +1,4 @@
-import { User } from "@domain/entities/user";
+import { type User } from "@domain/entities/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
@@ -19,22 +19,10 @@ export class GetUserUseCase {
 
     if (userOrNull === null) throw new UserNotFoundError();
 
-    const userWithUpdatedReadTime = User.create(
-      {
-        name: userOrNull.props.name,
-        job: userOrNull.props.job,
-        email: userOrNull.props.email,
-        password: userOrNull.props.password,
-      },
-      userOrNull.id,
-      userOrNull.read_time++,
-      userOrNull.updated_at
-    );
+    userOrNull.read_time = userOrNull.read_time += 1;
 
-    userOrNull.props = userWithUpdatedReadTime.props;
+    await this.userRepository.update(userOrNull);
 
-    const user = await this.userRepository.update(userOrNull);
-
-    return { user };
+    return { user: userOrNull };
   }
 }
