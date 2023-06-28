@@ -6,6 +6,7 @@ import { User } from "@domain/entities/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
+import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
 
 interface UpdateUserRequest {
   id: string;
@@ -32,6 +33,10 @@ export class UpdateUserUseCase {
 
     if (userFound === null) throw new UserNotFoundError();
 
+    const userAlreadyExists = await this.userRepository.exists(email);
+
+    if (userAlreadyExists) throw new UserAlreadyExistsError();
+
     const nameOrError = Name.create(name);
     const jobOrError = Job.create(job);
     const emailOrError = Email.create(email);
@@ -51,8 +56,8 @@ export class UpdateUserUseCase {
 
     userFound.props = user.props;
 
-    const updatedUser = await this.userRepository.update(userFound);
+    await this.userRepository.update(userFound);
 
-    return { updatedUser };
+    return { updatedUser: userFound };
   }
 }
