@@ -9,13 +9,11 @@ interface DeleteUserRequest {
 export class DeleteUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute({ id }: DeleteUserRequest): Promise<null> {
+  async execute({ id }: DeleteUserRequest): Promise<void> {
     const user = await this.userRepository.findById(id);
 
     if (user === null) throw new UserNotFoundError();
 
     await this.userRepository.delete(user.id);
-
-    return null;
   }
 }
