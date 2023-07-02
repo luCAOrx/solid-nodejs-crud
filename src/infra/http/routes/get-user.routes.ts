@@ -1,7 +1,12 @@
 import { Router } from "express";
 
 import { GetUserController } from "../controllers/get-user/get-user-controller";
+import { EnsureAuthenticated } from "../middlewares/ensure-authenticated-middleware";
 
 export const getUserRoute = Router();
 
-getUserRoute.get("/users/get-user/:id", new GetUserController().handle);
+getUserRoute.get(
+  "/users/get-user/:id",
+  new EnsureAuthenticated().handle,
+  new GetUserController().handle
+);
