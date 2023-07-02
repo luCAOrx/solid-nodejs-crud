@@ -18,6 +18,7 @@ describe("Authenticate user use case", () => {
     const authenticate = await authenticateUserUseCase.execute({
       email: user.props.email,
       password: user.props.password,
+      isPasswordSameSaveInDatabase: true,
     });
 
     expect(inMemoryUserDatabase.users[0]).toStrictEqual(authenticate.user);
@@ -31,6 +32,7 @@ describe("Authenticate user use case", () => {
       await authenticateUserUseCase.execute({
         email: "frank@example.com",
         password: "1234567890",
+        isPasswordSameSaveInDatabase: true,
       });
     }).rejects.toThrowError(InvalidEmailOrPasswordError);
   });
@@ -40,6 +42,7 @@ describe("Authenticate user use case", () => {
       await authenticateUserUseCase.execute({
         email: "joe@example.com",
         password: "12345678901",
+        isPasswordSameSaveInDatabase: false,
       });
     }).rejects.toThrowError(InvalidEmailOrPasswordError);
   });
