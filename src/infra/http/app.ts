@@ -5,6 +5,7 @@ import "express-async-errors";
 import cors from "cors";
 import express from "express";
 
+import { authenticateUserRoute } from "./routes/authenticate-user.routes";
 import { deleteUserRoute } from "./routes/delete-user.routes";
 import { getUserRoute } from "./routes/get-user.routes";
 import { getUsersRoute } from "./routes/get-users.routes";
@@ -20,3 +21,4 @@ app.use(getUserRoute);
 app.use(getUsersRoute);
 app.use(updateUserRoute);
 app.use(deleteUserRoute);
+app.use(authenticateUserRoute);
