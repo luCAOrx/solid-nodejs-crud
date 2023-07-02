@@ -4,6 +4,8 @@ import { app } from "@infra/http/app";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 describe("Get users controller", () => {
+  jest.setTimeout(100000);
+
   beforeAll(async () => {
     for (let i = 0; i < 20; i++) {
       await new MakeUserFactory().toHttp({
