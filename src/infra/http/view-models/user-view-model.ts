@@ -13,7 +13,7 @@ export interface ToHttpResponse {
 export class UserViewModel {
   static toHttp({
     id,
-    props: { name, job, email, password },
+    props: { name, job, email },
     read_time,
     created_at,
     updated_at,
