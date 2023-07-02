@@ -6,6 +6,7 @@ import { InvalidEmailOrPasswordError } from "./errors/invalid-email-or-password-
 interface AuthenticateUserRequest {
   email: string;
   password: string;
+  isPasswordSameSaveInDatabase: boolean;
 }
 
 interface AuthenticateUserResponse {
@@ -18,13 +19,13 @@ export class AuthenticateUserUseCase {
   async execute({
     email,
     password,
+    isPasswordSameSaveInDatabase = false,
   }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
     const userOrNull = await this.userRepository.findByEmail(email);
 
     if (userOrNull === null) throw new InvalidEmailOrPasswordError();
 
-    if (password !== userOrNull.props.password)
-      throw new InvalidEmailOrPasswordError();
+    if (!isPasswordSameSaveInDatabase) throw new InvalidEmailOrPasswordError();
 
     return { user: userOrNull };
   }
