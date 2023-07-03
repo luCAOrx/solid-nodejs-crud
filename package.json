@@ -6,7 +6,9 @@
   "scripts": {
     "start:dev": "tsx watch ./src/infra/http/server.ts",
     "test": "jest",
-    "test:e2e": "jest --config ./test/jest.e2e-config.ts"
+    "test:watch": "jest --watch",
+    "test:e2e": "jest --config ./test/jest.e2e-config.ts",
+    "test:cov": "jest --coverage"
   },
   "author": "Lucas 'luCAO' Cunha",
   "license": "ISC",
