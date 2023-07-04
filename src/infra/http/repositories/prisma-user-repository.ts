@@ -37,7 +37,6 @@ export class PrismaUserRepository implements UserRepository {
         read_time,
         created_at,
         updated_at,
-        role: "USER",
       },
     });
 
