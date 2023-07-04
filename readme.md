@@ -95,108 +95,113 @@ Defina uma forma de criar permissão para o usuário, defina se o usuário pode 
 
 ### Subir os containers do docker
 ```bash
-$ sudo make up
+sudo make up
 ```
 
 ### Instalar as dependências
 ```bash
-$ npm install
+npm install
 ```
 
 ### Adicione as variáveis de ambiente
 Renomeie o arquivo `.env.example` para `.env` e altere se necessário os valores das variáveis.
 
+### Execute as migrações
+```bash
+npx prisma migrate dev
+```
+
 ### Execute a aplicação em modo de desenvolvimento
 ```bash
-$ npm run start:dev
+npm run start:dev
 ```
 
 ## Executando a aplicação
 
 ### modo de desenvolvimento
 ```bash
-$ npm run start:dev
+npm run start:dev
 ```
 
 ### modo de produção
 ```bash
-$ npm run start:prod
+npm run start:prod
 ```
 
 ## Teste
 
 ### testes unitários
 ```bash
-$ npm run test
+npm run test
 ```
 
 ### observar alterações nos testes
 ```bash
-$ npm run test:watch
+npm run test:watch
 ```
 
 
 ### testes e2e (ponta à ponta)
 ```bash
-$ npm run test:e2e
+npm run test:e2e
 ```
 
 ### cobertura de testes
 ```bash
-$ npm run test:cov
+npm run test:cov
 ```
 
 ## Comandos do docker-compose
 ### Subir os containers
 ```bash
-$ sudo make up
+sudo make up
 ```
 
 ### Remover os containers
 ```bash
-$ sudo make down
+sudo make down
 ```
 
 #### Banco de dados
 ##### Subir o container
 ```bash
-$ sudo make start-database
+sudo make start-database
 ```
 
 ##### Mostrar os logs
 ```bash
-$ sudo make logs-database
+sudo make logs-database
 ```
 
 ##### Reiniciar o container
 ```bash
-$ sudo make restart-database 
+sudo make restart-database 
 ```
 
 ##### Parar o container
 ```bash
-$ sudo make stop-database 
+sudo make stop-database 
 ```
 
 #### Servidor
 ##### Subir o container
 ```bash
-$ sudo make start-server
+sudo make start-server
 ```
 
 ##### Mostrar os logs
 ```bash
-$ sudo make logs-server
+sudo make logs-server
 ```
 
 ##### Reiniciar o container
 ```bash
-$ sudo make restart-server 
+sudo make restart-server 
 ```
 
 ##### Parar o container
 ```bash
-$ sudo make stop-server 
+sudo make stop-server 
 ```
   
 ## Licença
