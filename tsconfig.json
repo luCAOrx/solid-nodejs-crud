@@ -10,7 +10,8 @@
     "paths": {
       "@domain/*": [ "./src/domain/*" ],
       "@infra/*": [ "./src/infra/*" ],
-      "@test/*": [ "./test/*" ]
+      "@test/*": [ "./test/*" ],
+      "@doc/*": [ "./docs/*" ]
     }
   }
 }
