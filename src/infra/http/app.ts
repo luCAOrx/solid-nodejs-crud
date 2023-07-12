@@ -4,6 +4,9 @@ import "express-async-errors";
 
 import cors from "cors";
 import express from "express";
+import { serve, setup } from "swagger-ui-express";
+
+import { swaggerSpec } from "@doc/swagger";
 
 import { authenticateUserRoute } from "./routes/authenticate-user.routes";
 import { deleteUserRoute } from "./routes/delete-user.routes";
@@ -16,6 +19,13 @@ export const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(
+  "/api-docs",
+  serve,
+  setup(swaggerSpec, {
+    customSiteTitle: "SOLID Node.JS CRUD",
+  })
+);
 app.use(registerUserRoute);
 app.use(getUserRoute);
 app.use(getUsersRoute);
