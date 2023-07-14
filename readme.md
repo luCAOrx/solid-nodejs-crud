@@ -128,6 +128,12 @@ npm run start:dev
 npm run start:prod
 ```
 
+## Documentação da API
+Inicie o servidor em modo de desenvolvimento e [acesse](http://localhost:3333/api-docs)
+```bash
+$ npm run start:dev
+```
+
 ## Teste
 
 ### testes unitários
@@ -139,7 +145,6 @@ npm run test
 ```bash
 npm run test:watch
 ```
-
 
 ### testes e2e (ponta à ponta)
 ```bash
@@ -181,27 +186,6 @@ sudo make restart-database
 ##### Parar o container
 ```bash
 sudo make stop-database 
-```
-
-#### Servidor
-##### Subir o container
-```bash
-sudo make start-server
-```
-
-##### Mostrar os logs
-```bash
-sudo make logs-server
-```
-
-##### Reiniciar o container
-```bash
-sudo make restart-server 
-```
-
-##### Parar o container
-```bash
-sudo make stop-server 
 ```
   
 ## Licença
