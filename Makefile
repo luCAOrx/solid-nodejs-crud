@@ -23,19 +23,3 @@ logs-database:
 .PHONY: stop-database
 stop-database:
 	docker stop solid-nodejs-crud-database
-
-.PHONY: start-server
-start-server:
-	docker start solid-nodejs-crud-server
-
-.PHONY: restart-server
-restart-server:
-	docker restart solid-nodejs-crud-server
-
-.PHONY: logs-server
-logs-server:
-	docker-compose logs -f solid-nodejs-crud-server
-
-.PHONY: stop-server
-stop-server:
-	docker stop solid-nodejs-crud-server
