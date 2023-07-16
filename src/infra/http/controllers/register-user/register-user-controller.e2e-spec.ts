@@ -1,3 +1,6 @@
+import request from "supertest";
+
+import { app } from "@infra/http/app";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 describe("Register user controller", () => {
@@ -16,6 +19,71 @@ describe("Register user controller", () => {
         updated_at: body.user.updated_at,
       },
     });
+  });
+
+  it("should not be able to register new user without properties of request body", async () => {
+    await request(app).post("/users/register").send({}).expect(500, {
+      statusCode: 500,
+      message:
+        "The properties: name, job, email and password, should be provided in the request body",
+      error: "Internal Server Error",
+    });
+  });
+
+  it("should not be able to register new user just with name property of the request body", async () => {
+    await request(app)
+      .post("/users/register")
+      .send({
+        name: "Francis Fran",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to register new user just with job property of the request body", async () => {
+    await request(app)
+      .post("/users/register")
+      .send({
+        job: "Mechanic",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to register new user just with email property of the request body", async () => {
+    await request(app)
+      .post("/users/register")
+      .send({
+        email: "test@example.com",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to register new user just with password property of the request body", async () => {
+    await request(app)
+      .post("/users/register")
+      .send({
+        password: "1234512345",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
   });
 
   it("should not be able to register new user with field name empty", async () => {
