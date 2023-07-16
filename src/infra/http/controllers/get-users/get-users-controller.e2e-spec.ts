@@ -34,6 +34,36 @@ describe("Get users controller", () => {
     });
   });
 
+  it("should not be able list users without query params of the request", async () => {
+    await request(app).get("/users/get-users").query({}).expect(500, {
+      statusCode: 500,
+      message:
+        "The query parameters: page and takePage, must be provided in the query parameters of the request",
+      error: "Internal Server Error",
+    });
+  });
+
+  it("should not be able to list users just with page property of the query params", async () => {
+    await request(app).get("/users/get-users").query({ page: 1 }).expect(500, {
+      statusCode: 500,
+      message:
+        "The query parameters: page and takePage, must be provided in the query parameters of the request",
+      error: "Internal Server Error",
+    });
+  });
+
+  it("should not be able to list users just with takePage property of the query params", async () => {
+    await request(app)
+      .get("/users/get-users")
+      .query({ takePage: 5 })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The query parameters: page and takePage, must be provided in the query parameters of the request",
+        error: "Internal Server Error",
+      });
+  });
+
   it("should be able paginate", async () => {
     const { body: pageOneBodyResponse, statusCode: pageOneStatusCode } =
       await request(app)
