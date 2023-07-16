@@ -34,6 +34,14 @@ describe("Get user controller", () => {
     });
   });
 
+  it("should not be able get a user without route params of the request", async () => {
+    await request(app).get(`/users/get-user/`).expect(404, {
+      statusCode: 404,
+      message: "Page not found",
+      error: "Not Found",
+    });
+  });
+
   it("should be able to count how many times the user has been read", async () => {
     const { body } = await new MakeUserFactory().toHttp({
       override: {
