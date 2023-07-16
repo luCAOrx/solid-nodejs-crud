@@ -27,6 +27,14 @@ describe("Delete user controller", () => {
     expect(deleteUserBody).toStrictEqual({});
   });
 
+  it("should not be able delete a user without route params of the request", async () => {
+    await request(app).delete("/users/delete-user/").expect(404, {
+      statusCode: 404,
+      message: "Page not found",
+      error: "Not Found",
+    });
+  });
+
   it("should not be able to delete non-existent user", async () => {
     await new MakeUserFactory().toHttp({
       override: {
