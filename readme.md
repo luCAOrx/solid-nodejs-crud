@@ -131,7 +131,7 @@ npm run start:prod
 ## Documentação da API
 Inicie o servidor em modo de desenvolvimento e [acesse](http://localhost:3333/api-docs)
 ```bash
-$ npm run start:dev
+npm run start:dev
 ```
 
 ## Teste
