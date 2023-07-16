@@ -43,6 +43,160 @@ describe("Update user controller", () => {
     });
   });
 
+  it("should not be able to update user without route params", async () => {
+    await request(app)
+      .put("/users/update-user/")
+      .send({
+        name: "Frank Wells",
+        job: "doctor",
+        email: "igor@example.com",
+        password: "1234567890",
+      })
+      .expect(404, {
+        statusCode: 404,
+        message: "Page not found",
+        error: "Not Found",
+      });
+  });
+
+  it("should not be able to update user without properties of request body", async () => {
+    const { body } = await new MakeUserFactory().toHttp({
+      override: {
+        email: "update-user@example.com",
+      },
+    });
+
+    const { body: authenticateUserBody } = await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "update-user@example.com",
+        password: "1234567890",
+      });
+
+    await request(app)
+      .put(`/users/update-user/${String(body.user.id)}`)
+      .set("Authorization", `Bearer ${String(authenticateUserBody.token)}`)
+      .send({})
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to update user just with name property of the request body", async () => {
+    const { body } = await new MakeUserFactory().toHttp({
+      override: {
+        email: "update-user1@example.com",
+      },
+    });
+
+    const { body: authenticateUserBody } = await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "update-user1@example.com",
+        password: "1234567890",
+      });
+
+    await request(app)
+      .put(`/users/update-user/${String(body.user.id)}`)
+      .set("Authorization", `Bearer ${String(authenticateUserBody.token)}`)
+      .send({
+        name: "Francis Fran",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to update user just with job property of the request body", async () => {
+    const { body } = await new MakeUserFactory().toHttp({
+      override: {
+        email: "update-user2@example.com",
+      },
+    });
+
+    const { body: authenticateUserBody } = await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "update-user2@example.com",
+        password: "1234567890",
+      });
+
+    await request(app)
+      .put(`/users/update-user/${String(body.user.id)}`)
+      .set("Authorization", `Bearer ${String(authenticateUserBody.token)}`)
+      .send({
+        job: "Mechanic",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to update user just with email property of the request body", async () => {
+    const { body } = await new MakeUserFactory().toHttp({
+      override: {
+        email: "update-user3@example.com",
+      },
+    });
+
+    const { body: authenticateUserBody } = await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "update-user3@example.com",
+        password: "1234567890",
+      });
+
+    await request(app)
+      .put(`/users/update-user/${String(body.user.id)}`)
+      .set("Authorization", `Bearer ${String(authenticateUserBody.token)}`)
+      .send({
+        email: "test@example.com",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to update user just with password property of the request body", async () => {
+    const { body } = await new MakeUserFactory().toHttp({
+      override: {
+        email: "update-user4@example.com",
+      },
+    });
+
+    const { body: authenticateUserBody } = await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "update-user4@example.com",
+        password: "1234567890",
+      });
+
+    await request(app)
+      .put(`/users/update-user/${String(body.user.id)}`)
+      .set("Authorization", `Bearer ${String(authenticateUserBody.token)}`)
+      .send({
+        password: "1234512345",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
   it("should not be able update user that non exists", async () => {
     await new MakeUserFactory().toHttp({
       override: {
