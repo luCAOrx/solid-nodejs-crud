@@ -35,6 +35,64 @@ describe("Authenticate user controller", () => {
     });
   });
 
+  it("should not be able to authenticate user without properties of request body", async () => {
+    await new MakeUserFactory().toHttp({
+      override: {
+        email: "test@example.com",
+        password: "1234567890",
+      },
+    });
+
+    await request(app).post("/users/authenticate").send({}).expect(500, {
+      statusCode: 500,
+      message:
+        "The properties: email and password, should be provided in the request body",
+      error: "Internal Server Error",
+    });
+  });
+
+  it("should not be able to authenticate user just with email property of request body", async () => {
+    await new MakeUserFactory().toHttp({
+      override: {
+        email: "test@example.com",
+        password: "1234567890",
+      },
+    });
+
+    await request(app)
+      .post("/users/authenticate")
+      .send({
+        email: "test@example.com",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
+  it("should not be able to authenticate user just with password property of request body", async () => {
+    await new MakeUserFactory().toHttp({
+      override: {
+        email: "test@example.com",
+        password: "1234567890",
+      },
+    });
+
+    await request(app)
+      .post("/users/authenticate")
+      .send({
+        password: "1234567890",
+      })
+      .expect(500, {
+        statusCode: 500,
+        message:
+          "The properties: email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      });
+  });
+
   it("should not be able authenticate if provided email not equal that user email", async () => {
     await new MakeUserFactory().toHttp({
       override: {
