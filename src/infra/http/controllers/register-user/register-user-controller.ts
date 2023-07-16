@@ -18,12 +18,20 @@ import { PasswordValidation } from "@domain/validations/password/password-valida
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
+interface RegisterUserRequestBodyProps {
+  name: string;
+  job: string;
+  email: string;
+  password: string;
+}
+
 export class RegisterUserController {
   async handle(
     request: Request,
     response: Response
   ): Promise<Response<any, Record<string, any>> | undefined> {
-    const { name, job, email, password } = request.body;
+    const { name, job, email, password } =
+      request.body as RegisterUserRequestBodyProps;
 
     const prismaUserRepository = new PrismaUserRepository();
 
@@ -63,6 +71,21 @@ export class RegisterUserController {
           statusCode: 400,
           message: error.message,
           error: "Bad request",
+        });
+      }
+
+      if (
+        Object.keys(request.body).length === 0 ||
+        Object.hasOwn(request.body, "name") ||
+        Object.hasOwn(request.body, "job") ||
+        Object.hasOwn(request.body, "email") ||
+        Object.hasOwn(request.body, "password")
+      ) {
+        return response.status(500).json({
+          statusCode: 500,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Internal Server Error",
         });
       }
     }
