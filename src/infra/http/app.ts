@@ -8,7 +8,6 @@ import { serve, setup } from "swagger-ui-express";
 
 import { swaggerSpec } from "@doc/swagger";
 
-import { internalServerError } from "./errors/internal-server-error/internal-server-error";
 import { pageNotFoundError } from "./errors/page-not-found/page-not-found-error";
 import { authenticateUserRoute } from "./routes/authenticate-user.routes";
 import { deleteUserRoute } from "./routes/delete-user.routes";
@@ -35,4 +34,3 @@ app.use(updateUserRoute);
 app.use(deleteUserRoute);
 app.use(authenticateUserRoute);
 app.all("*", pageNotFoundError);
-app.all("*", internalServerError);
