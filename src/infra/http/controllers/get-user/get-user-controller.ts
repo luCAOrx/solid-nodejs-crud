@@ -5,9 +5,13 @@ import { GetUserUseCase } from "@domain/use-cases/get-user/get-user-use-case";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
+interface GetUserRouteParamsProps {
+  id: string;
+}
+
 export class GetUserController {
   async handle(request: Request, response: Response): Promise<void> {
-    const { id } = request.params;
+    const { id } = request.params as unknown as GetUserRouteParamsProps;
 
     const prismaUserRepository = new PrismaUserRepository();
     const getUserUseCase = new GetUserUseCase(prismaUserRepository);
