@@ -27,7 +27,5 @@ export const authenticateUserRequest: Operation = {
       },
     },
   },
-  responses: {
-    400: authenticateUserResponse,
-  },
+  responses: authenticateUserResponse,
 };
