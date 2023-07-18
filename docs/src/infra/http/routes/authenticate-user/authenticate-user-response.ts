@@ -1,6 +1,6 @@
-import { type Response } from "swagger-jsdoc";
+import { type Responses, type Response } from "swagger-jsdoc";
 
-export const authenticateUserResponse: Response = {
+const httpResponseToAuthenticateUser: Response = {
   description: "HTTP response to error in authenticate a user",
   content: {
     "application/json": {
@@ -11,4 +11,25 @@ export const authenticateUserResponse: Response = {
       },
     },
   },
+};
+
+const httpResponseToInternalServerError: Response = {
+  description:
+    "HTTP response to authenticate user without properties of request body",
+  content: {
+    "application/json": {
+      example: {
+        statusCode: 500,
+        message:
+          "The properties: email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      },
+    },
+  },
+};
+
+export const authenticateUserResponse: Responses = {
+  200: httpResponseToAuthenticateUser,
+
+  500: httpResponseToInternalServerError,
 };
