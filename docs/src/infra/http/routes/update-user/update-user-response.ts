@@ -1,5 +1,6 @@
 import { type Response, type Responses } from "swagger-jsdoc";
 
+import { httpResponseToPageNotFound } from "../global-responses/page-not-found-response";
 import { httpResponseToUnauthorizedClient } from "../global-responses/user-unauthorized-response";
 
 const httpResponseToSuccessRequest: Response = {
@@ -75,10 +76,29 @@ const httpResponseToClientError: Response = {
   },
 };
 
+const httpResponseToInternalServerError: Response = {
+  description:
+    "HTTP response to update user without properties of request body",
+  content: {
+    "application/json": {
+      example: {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      },
+    },
+  },
+};
+
 export const updateUserResponse: Responses = {
   201: httpResponseToSuccessRequest,
 
   400: httpResponseToClientError,
 
   401: httpResponseToUnauthorizedClient,
+
+  404: httpResponseToPageNotFound,
+
+  500: httpResponseToInternalServerError,
 };
