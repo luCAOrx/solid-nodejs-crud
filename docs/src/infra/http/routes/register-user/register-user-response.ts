@@ -64,8 +64,25 @@ const httpResponseToClientError: Response = {
   },
 };
 
+const httpResponseToInternalServerError: Response = {
+  description:
+    "HTTP response to register new user without properties of request body",
+  content: {
+    "application/json": {
+      example: {
+        statusCode: 500,
+        message:
+          "The properties: name, job, email and password, should be provided in the request body",
+        error: "Internal Server Error",
+      },
+    },
+  },
+};
+
 export const registerUserResponse: Responses = {
   201: httpResponseToCreatedResource,
 
   400: httpResponseToClientError,
+
+  500: httpResponseToInternalServerError,
 };
