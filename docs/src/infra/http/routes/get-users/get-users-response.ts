@@ -70,8 +70,25 @@ const httpBadRequestResponse: Response = {
   },
 };
 
+const httpResponseToInternalServerError: Response = {
+  description:
+    "HTTP response to list users without query params of the request",
+  content: {
+    "application/json": {
+      example: {
+        statusCode: 500,
+        message:
+          "The query parameters: page and takePage, must be provided in the query parameters of the request",
+        error: "Internal Server Error",
+      },
+    },
+  },
+};
+
 export const getUsersResponse: Responses = {
   200: httpResponseToSuccessRequest,
 
   400: httpBadRequestResponse,
+
+  500: httpResponseToInternalServerError,
 };
