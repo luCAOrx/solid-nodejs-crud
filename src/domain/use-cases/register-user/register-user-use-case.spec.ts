@@ -1,4 +1,7 @@
-import { User } from "@domain/entities/user";
+import { strictEqual, ok, rejects } from "node:assert";
+import { describe, it } from "node:test";
+
+import { User } from "@domain/entities/user/user";
 import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
@@ -17,23 +20,24 @@ describe("Register user use case", () => {
       password: "1234567890",
     });
 
-    expect(inMemoryUserDatabase.exists("lucas@example.com")).toBeTruthy();
-    expect(inMemoryUserDatabase.users[0]).toStrictEqual(response.user);
-    expect(inMemoryUserDatabase.users).toHaveLength(1);
-    expect(response).toBeTruthy();
-    expect(response).toStrictEqual(response);
+    ok(inMemoryUserDatabase.exists("lucas@example.com"));
+    strictEqual(inMemoryUserDatabase.users[0], response.user);
+    strictEqual(inMemoryUserDatabase.users.length, 1);
+    ok(response);
+    strictEqual(response, response);
   });
 
   it("should not be able to register new user with invalid data", async () => {
-    await expect(
+    await rejects(
       async () =>
         await registerUserUseCase.execute({
           name: "",
           job: "dev".repeat(260),
           email: "ana",
           password: "123",
-        })
-    ).rejects.toThrow(NameShouldNotBeEmptyError);
+        }),
+      NameShouldNotBeEmptyError
+    );
   });
 
   it("should not be able to register new user with existing email", async () => {
@@ -46,14 +50,15 @@ describe("Register user use case", () => {
 
     await inMemoryUserDatabase.create(user);
 
-    await expect(
+    await rejects(
       async () =>
         await registerUserUseCase.execute({
           name: "Lucas",
           job: "Development",
           email: "lucas@example.com",
           password: "1234567890",
-        })
-    ).rejects.toThrow(UserAlreadyExistsError);
+        }),
+      UserAlreadyExistsError
+    );
   });
 });

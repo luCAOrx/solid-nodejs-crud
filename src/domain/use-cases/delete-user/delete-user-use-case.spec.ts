@@ -1,3 +1,6 @@
+import { strictEqual, rejects } from "node:assert";
+import { describe, it } from "node:test";
+
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
@@ -19,18 +22,18 @@ describe("Delete user use case", () => {
       password: "1234567890",
     });
 
-    expect(inMemoryUserDatabase.users.length).toEqual(1);
+    strictEqual(inMemoryUserDatabase.users.length, 1);
 
     await deleteUserUseCase.execute({
       id,
     });
 
-    expect(inMemoryUserDatabase.users.length).toEqual(0);
+    strictEqual(inMemoryUserDatabase.users.length, 0);
   });
 
   it("should not be able to delete non-existent user", async () => {
-    await expect(
-      async () => await deleteUserUseCase.execute({ id: "1234567890" })
-    ).rejects.toThrowError(UserNotFoundError);
+    await rejects(async () => {
+      await deleteUserUseCase.execute({ id: "1234567890" });
+    }, UserNotFoundError);
   });
 });

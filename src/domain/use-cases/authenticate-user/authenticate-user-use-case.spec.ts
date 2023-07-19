@@ -1,3 +1,6 @@
+import { ok, rejects, strictEqual } from "node:assert";
+import { describe, it } from "node:test";
+
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
@@ -21,29 +24,29 @@ describe("Authenticate user use case", () => {
       isPasswordSameSaveInDatabase: true,
     });
 
-    expect(inMemoryUserDatabase.users[0]).toStrictEqual(authenticate.user);
-    expect(inMemoryUserDatabase.users).toHaveLength(1);
-    expect(authenticate).toBeTruthy();
-    expect(authenticate.user).toStrictEqual(user);
+    strictEqual(inMemoryUserDatabase.users[0], authenticate.user);
+    strictEqual(inMemoryUserDatabase.users.length, 1);
+    ok(authenticate);
+    strictEqual(authenticate.user, user);
   });
 
   it("should not be able authenticate if provided email not equal that user email", async () => {
-    await expect(async () => {
+    await rejects(async () => {
       await authenticateUserUseCase.execute({
         email: "frank@example.com",
         password: "1234567890",
         isPasswordSameSaveInDatabase: true,
       });
-    }).rejects.toThrowError(InvalidEmailOrPasswordError);
+    }, InvalidEmailOrPasswordError);
   });
 
   it("should not be able authenticate if provided password not equal that user password", async () => {
-    await expect(async () => {
+    await rejects(async () => {
       await authenticateUserUseCase.execute({
         email: "joe@example.com",
         password: "12345678901",
         isPasswordSameSaveInDatabase: false,
       });
-    }).rejects.toThrowError(InvalidEmailOrPasswordError);
+    }, InvalidEmailOrPasswordError);
   });
 });

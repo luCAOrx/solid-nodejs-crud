@@ -1,4 +1,7 @@
-import { User } from "@domain/entities/user";
+import { strictEqual, ok, rejects } from "node:assert";
+import { describe, it } from "node:test";
+
+import { User } from "@domain/entities/user/user";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
@@ -16,13 +19,13 @@ describe("Get user use case", () => {
 
     const { user } = await getUserUseCase.execute({ id });
 
-    expect(inMemoryUserDatabase.users[0].id).toStrictEqual(user.id);
-    expect(inMemoryUserDatabase.users[0].read_time).toStrictEqual(1);
-    expect(inMemoryUserDatabase.users[0]).toStrictEqual(user);
-    expect(inMemoryUserDatabase.users).toHaveLength(1);
-    expect(user).toBeTruthy();
-    expect(user).toStrictEqual(user);
-    expect(user).toBeInstanceOf(User);
+    strictEqual(inMemoryUserDatabase.users[0].id, user.id);
+    strictEqual(inMemoryUserDatabase.users[0].read_time, 1);
+    strictEqual(inMemoryUserDatabase.users[0], user);
+    strictEqual(inMemoryUserDatabase.users.length, 1);
+    ok(user);
+    strictEqual(user, user);
+    ok(user instanceof User);
   });
 
   it("should be able to count how many times the user has been read", async () => {
@@ -33,40 +36,39 @@ describe("Get user use case", () => {
 
     const { user: userReadOneTimes } = await getUserUseCase.execute({ id });
 
-    expect(inMemoryUserDatabase.users[1].id).toStrictEqual(userReadOneTimes.id);
-    expect(inMemoryUserDatabase.users[1].read_time).toStrictEqual(1);
-    expect(inMemoryUserDatabase.users[1]).toStrictEqual(userReadOneTimes);
-    expect(inMemoryUserDatabase.users).toHaveLength(2);
-    expect(userReadOneTimes).toBeTruthy();
-    expect(userReadOneTimes).toStrictEqual(userReadOneTimes);
-    expect(userReadOneTimes).toBeInstanceOf(User);
+    strictEqual(inMemoryUserDatabase.users[1].id, userReadOneTimes.id);
+    strictEqual(inMemoryUserDatabase.users[1].read_time, 1);
+    strictEqual(inMemoryUserDatabase.users[1], userReadOneTimes);
+    strictEqual(inMemoryUserDatabase.users.length, 2);
+    ok(userReadOneTimes);
+    strictEqual(userReadOneTimes, userReadOneTimes);
+    ok(userReadOneTimes instanceof User);
 
     const { user: userReadTwoTimes } = await getUserUseCase.execute({ id });
 
-    expect(inMemoryUserDatabase.users[1].id).toStrictEqual(userReadTwoTimes.id);
-    expect(inMemoryUserDatabase.users[1].read_time).toStrictEqual(2);
-    expect(inMemoryUserDatabase.users[1]).toStrictEqual(userReadTwoTimes);
-    expect(inMemoryUserDatabase.users).toHaveLength(2);
-    expect(userReadTwoTimes).toBeTruthy();
-    expect(userReadTwoTimes).toStrictEqual(userReadTwoTimes);
-    expect(userReadTwoTimes).toBeInstanceOf(User);
+    strictEqual(inMemoryUserDatabase.users[1].id, userReadTwoTimes.id);
+    strictEqual(inMemoryUserDatabase.users[1].read_time, 2);
+    strictEqual(inMemoryUserDatabase.users[1], userReadTwoTimes);
+    strictEqual(inMemoryUserDatabase.users.length, 2);
+    ok(userReadTwoTimes);
+    strictEqual(userReadTwoTimes, userReadTwoTimes);
+    ok(userReadTwoTimes instanceof User);
 
     const { user: userReadThreeTimes } = await getUserUseCase.execute({ id });
 
-    expect(inMemoryUserDatabase.users[1].id).toStrictEqual(
-      userReadThreeTimes.id
-    );
-    expect(inMemoryUserDatabase.users[1].read_time).toStrictEqual(3);
-    expect(inMemoryUserDatabase.users[1]).toStrictEqual(userReadThreeTimes);
-    expect(inMemoryUserDatabase.users).toHaveLength(2);
-    expect(userReadThreeTimes).toBeTruthy();
-    expect(userReadThreeTimes).toStrictEqual(userReadThreeTimes);
-    expect(userReadThreeTimes).toBeInstanceOf(User);
+    strictEqual(inMemoryUserDatabase.users[1].id, userReadThreeTimes.id);
+    strictEqual(inMemoryUserDatabase.users[1].read_time, 3);
+    strictEqual(inMemoryUserDatabase.users[1], userReadThreeTimes);
+    strictEqual(inMemoryUserDatabase.users.length, 2);
+    ok(userReadThreeTimes);
+    strictEqual(userReadThreeTimes, userReadThreeTimes);
+    ok(userReadThreeTimes instanceof User);
   });
 
   it("should not be able get user if user not exists", async () => {
-    await expect(async () => {
-      await getUserUseCase.execute({ id: "1234567890" });
-    }).rejects.toThrowError(UserNotFoundError);
+    await rejects(
+      async () => await getUserUseCase.execute({ id: "1234567890" }),
+      UserNotFoundError
+    );
   });
 });

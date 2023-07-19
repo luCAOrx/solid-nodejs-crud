@@ -1,4 +1,7 @@
-import { User } from "@domain/entities/user";
+import { strictEqual, rejects, ok } from "node:assert";
+import { describe, it } from "node:test";
+
+import { User } from "@domain/entities/user/user";
 import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
@@ -25,13 +28,13 @@ describe("Update user use case", () => {
       },
     });
 
-    expect(inMemoryUserDatabase.users[0].id).toStrictEqual(updatedUser.id);
-    expect(inMemoryUserDatabase.users[0].props.job).toStrictEqual("driver");
-    expect(inMemoryUserDatabase.users[0]).toStrictEqual(updatedUser);
-    expect(inMemoryUserDatabase.users).toHaveLength(1);
-    expect(updatedUser).toBeTruthy();
-    expect(updatedUser).toStrictEqual(updatedUser);
-    expect(updatedUser).toBeInstanceOf(User);
+    strictEqual(inMemoryUserDatabase.users[0].id, updatedUser.id);
+    strictEqual(inMemoryUserDatabase.users[0].props.job, "driver");
+    strictEqual(inMemoryUserDatabase.users[0], updatedUser);
+    strictEqual(inMemoryUserDatabase.users.length, 1);
+    ok(updatedUser);
+    strictEqual(updatedUser, updatedUser);
+    ok(updatedUser instanceof User);
   });
 
   it("should not be able update user that non exists", async () => {
@@ -39,7 +42,7 @@ describe("Update user use case", () => {
       inMemoryDatabase: inMemoryUserDatabase,
     });
 
-    await expect(async () => {
+    await rejects(async () => {
       await updateUserUseCase.execute({
         id: "1234567890000000",
         user: {
@@ -47,7 +50,7 @@ describe("Update user use case", () => {
           job: "Singer",
         },
       });
-    }).rejects.toThrowError(UserNotFoundError);
+    }, UserNotFoundError);
   });
 
   it("should not be able update user with invalid data", async () => {
@@ -55,7 +58,7 @@ describe("Update user use case", () => {
       inMemoryDatabase: inMemoryUserDatabase,
     });
 
-    await expect(async () => {
+    await rejects(async () => {
       await updateUserUseCase.execute({
         id,
         user: {
@@ -65,7 +68,7 @@ describe("Update user use case", () => {
           password: "123",
         },
       });
-    }).rejects.toThrowError(NameShouldNotBeEmptyError);
+    }, NameShouldNotBeEmptyError);
   });
 
   it("should not be able update user with existing email", async () => {
@@ -73,7 +76,7 @@ describe("Update user use case", () => {
       inMemoryDatabase: inMemoryUserDatabase,
     });
 
-    await expect(async () => {
+    await rejects(async () => {
       await updateUserUseCase.execute({
         id,
         user: {
@@ -83,6 +86,6 @@ describe("Update user use case", () => {
           password: "1234567890",
         },
       });
-    }).rejects.toThrowError(UserAlreadyExistsError);
+    }, UserAlreadyExistsError);
   });
 });
