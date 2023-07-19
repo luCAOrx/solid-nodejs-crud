@@ -1,8 +1,8 @@
-import { Email } from "@domain/entities/email";
-import { Job } from "@domain/entities/job";
-import { Name } from "@domain/entities/name";
-import { Password } from "@domain/entities/password";
-import { User } from "@domain/entities/user";
+import { Email } from "@domain/entities/email/email";
+import { Job } from "@domain/entities/job/job";
+import { Name } from "@domain/entities/name/name";
+import { Password } from "@domain/entities/password/password";
+import { User } from "@domain/entities/user/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
