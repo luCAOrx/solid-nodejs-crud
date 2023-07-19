@@ -1,10 +1,10 @@
 import request from "supertest";
 
-import { Email } from "@domain/entities/email";
-import { Job } from "@domain/entities/job";
-import { Name } from "@domain/entities/name";
-import { Password } from "@domain/entities/password";
-import { User } from "@domain/entities/user";
+import { Email } from "@domain/entities/email/email";
+import { Job } from "@domain/entities/job/job";
+import { Name } from "@domain/entities/name/name";
+import { Password } from "@domain/entities/password/password";
+import { User } from "@domain/entities/user/user";
 import { app } from "@infra/http/app";
 import { type InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
