@@ -5,7 +5,7 @@
   "main": "./src/server.js",
   "scripts": {
     "start:dev": "tsx watch ./src/infra/http/server.ts",
-    "test": "jest",
+    "test": "npx tsx --test ./src/domain/**/**/*.spec.ts",
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest.e2e-config.ts",
     "test:cov": "jest --coverage"
