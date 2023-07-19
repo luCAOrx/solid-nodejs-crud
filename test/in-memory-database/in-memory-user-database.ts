@@ -1,4 +1,4 @@
-import { type User } from "@domain/entities/user";
+import { type User } from "@domain/entities/user/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
 export class InMemoryUserDatabase implements UserRepository {

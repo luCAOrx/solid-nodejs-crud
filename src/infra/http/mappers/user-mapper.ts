@@ -1,4 +1,4 @@
-import { User } from "@domain/entities/user";
+import { User } from "@domain/entities/user/user";
 import { type User as Users } from "@prisma/client";
 
 interface ToPersistenceResponse {
