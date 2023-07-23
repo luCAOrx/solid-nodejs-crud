@@ -1,12 +1,12 @@
-import request from "supertest";
-
 import { Email } from "@domain/entities/email/email";
 import { Job } from "@domain/entities/job/job";
 import { Name } from "@domain/entities/name/name";
 import { Password } from "@domain/entities/password/password";
 import { User } from "@domain/entities/user/user";
-import { app } from "@infra/http/app";
 import { type InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
+import { BASE_URL } from "@test/utils/base-url";
+
+import { MakeRequestFactory } from "./make-request-factory";
 
 interface UserProps {
   name: string;
@@ -47,15 +47,20 @@ export class MakeUserFactory {
     override,
   }: {
     override?: Override;
-  }): Promise<request.Test> {
-    return await request(app)
-      .post("/users/register")
-      .send({
+  }): Promise<Response> {
+    return await MakeRequestFactory.execute({
+      url: `${BASE_URL}/users/register`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
         name: "John Doe",
         job: "Doctor",
         email: "johndoe@example.com",
         password: "1234567890",
         ...override,
-      });
+      },
+    });
   }
 }
