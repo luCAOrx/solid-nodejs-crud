@@ -1,26 +1,15 @@
 import * as dotenv from "dotenv";
-import NodeEnvironment from "jest-environment-node";
-import { exec } from "node:child_process";
+import { execSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { promisify } from "node:util";
 import { Client } from "pg";
-
-import type {
-  JestEnvironmentConfig,
-  EnvironmentContext,
-} from "@jest/environment";
 
 dotenv.config({ path: ".env" });
 
-const execSync = promisify(exec);
-
-export default class PrismaTestEnvironment extends NodeEnvironment {
+class PrismaTestEnvironment {
   private readonly schema: string;
   private readonly connectionString: string;
 
-  constructor(config: JestEnvironmentConfig, _context: EnvironmentContext) {
-    super(config, _context);
-
+  constructor() {
     const dbUser = process.env.DATABASE_USER;
     const dbPass = process.env.DATABASE_PASSWORD;
     const dbHost = process.env.DATABASE_HOST;
@@ -37,11 +26,8 @@ export default class PrismaTestEnvironment extends NodeEnvironment {
 
   async setup(): Promise<void> {
     process.env.DATABASE_URL = this.connectionString;
-    this.global.process.env.DATABASE_URL = this.connectionString;
 
-    await execSync("npx prisma migrate dev");
-
-    await super.setup();
+    execSync("npx prisma migrate dev");
   }
 
   async teardown(): Promise<void> {
@@ -54,3 +40,11 @@ export default class PrismaTestEnvironment extends NodeEnvironment {
     await client.end();
   }
 }
+
+export const prismaTestEnvironmentSetup = async (): Promise<void> => {
+  await new PrismaTestEnvironment().setup();
+};
+
+export const prismaTestEnvironmentTeardown = async (): Promise<void> => {
+  await new PrismaTestEnvironment().teardown();
+};
