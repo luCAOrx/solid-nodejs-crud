@@ -1,85 +1,129 @@
-import request from "supertest";
+import { deepStrictEqual } from "node:assert";
+import { describe, it } from "node:test";
 
+import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
+import { BASE_URL } from "@test/utils/base-url";
 
-import { app } from "../app";
+export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
+  describe("Ensure authenticate middleware", () => {
+    it("should not be able execute feature without are authenticate and with token empty", async () => {
+      const registerUserResponse = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "test-auth-1@example.com",
+          },
+        })
+      ).json();
 
-describe("Ensure authenticate middleware", () => {
-  it("should not be able execute feature without are authenticate and with token empty", async () => {
-    const { body } = await new MakeUserFactory().toHttp({
-      override: {
-        email: "test-auth-1@example.com",
-      },
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/delete-user/${String(
+          registerUserResponse.user.id
+        )}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 401);
+        deepStrictEqual(responseBody, {
+          statusCode: 401,
+          message: "The token should not be empty",
+          error: "Unauthorized",
+        });
+      });
     });
 
-    const { body: deleteUserBody, statusCode: deleteUserStatusCode } =
-      await request(app).delete(`/users/delete-user/${String(body.user.id)}`);
+    it("should not be able execute feature without are authenticate and with token without two parts", async () => {
+      const registerUserResponse = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "test-auth-2@example.com",
+          },
+        })
+      ).json();
 
-    expect(deleteUserStatusCode).toStrictEqual(401);
-    expect(deleteUserBody).toStrictEqual({
-      statusCode: 401,
-      message: "The token should not be empty",
-      error: "Unauthorized",
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/delete-user/${String(
+          registerUserResponse.user.id
+        )}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer ",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 401);
+        deepStrictEqual(responseBody, {
+          statusCode: 401,
+          message: "The token should be two parts",
+          error: "Unauthorized",
+        });
+      });
+    });
+
+    it("should not be able execute feature without are authenticate and if token not start with Bearer word", async () => {
+      const registerUserResponse = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "test-ensure-authenticate3@example.com",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/delete-user/${String(
+          registerUserResponse.user.id
+        )}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer-fake ${String(registerUserResponse.user.id)}`,
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 401);
+        deepStrictEqual(responseBody, {
+          statusCode: 401,
+          message: "The token should be start with Bearer word",
+          error: "Unauthorized",
+        });
+      });
+    });
+
+    it("should not be able execute feature without are authenticate and with token invalid", async () => {
+      const registerUserResponse = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "test-auth4@example.com",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/delete-user/${String(
+          registerUserResponse.user.id
+        )}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer 1234567890",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 401);
+        deepStrictEqual(responseBody, {
+          statusCode: 401,
+          message: "The token is invalid",
+          error: "Unauthorized",
+        });
+      });
     });
   });
-
-  it("should not be able execute feature without are authenticate and with token without two parts", async () => {
-    const { body } = await new MakeUserFactory().toHttp({
-      override: {
-        email: "test-auth-2@example.com",
-      },
-    });
-
-    const { body: deleteUserBody, statusCode: deleteUserStatusCode } =
-      await request(app)
-        .delete(`/users/delete-user/${String(body.user.id)}`)
-        .set("Authorization", "Bearer ");
-
-    expect(deleteUserStatusCode).toStrictEqual(401);
-    expect(deleteUserBody).toStrictEqual({
-      statusCode: 401,
-      message: "The token should be two parts",
-      error: "Unauthorized",
-    });
-  });
-
-  it("should not be able execute feature without are authenticate and if token not start with Bearer word", async () => {
-    const { body } = await new MakeUserFactory().toHttp({
-      override: {
-        email: "test-auth-3@example.com",
-      },
-    });
-
-    const { body: deleteUserBody, statusCode: deleteUserStatusCode } =
-      await request(app)
-        .delete(`/users/delete-user/${String(body.user.id)}`)
-        .set("Authorization", `Bearer-fake ${String(body.user.token)}`);
-
-    expect(deleteUserStatusCode).toStrictEqual(401);
-    expect(deleteUserBody).toStrictEqual({
-      statusCode: 401,
-      message: "The token should be start with Bearer word",
-      error: "Unauthorized",
-    });
-  });
-
-  it("should not be able execute feature without are authenticate and with token invalid", async () => {
-    const { body } = await new MakeUserFactory().toHttp({
-      override: {
-        email: "test-auth-4@example.com",
-      },
-    });
-
-    const { body: deleteUserBody, statusCode: deleteUserStatusCode } =
-      await request(app)
-        .delete(`/users/delete-user/${String(body.user.id)}`)
-        .set("Authorization", "Bearer 1234567890");
-
-    expect(deleteUserStatusCode).toStrictEqual(401);
-    expect(deleteUserBody).toStrictEqual({
-      statusCode: 401,
-      message: "The token is invalid",
-      error: "Unauthorized",
-    });
-  });
-});
+}

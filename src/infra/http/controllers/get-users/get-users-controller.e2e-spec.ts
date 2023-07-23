@@ -1,123 +1,195 @@
-import request from "supertest";
+import { deepStrictEqual } from "node:assert";
+import { describe, it, before } from "node:test";
 
-import { app } from "@infra/http/app";
+import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
+import { BASE_URL } from "@test/utils/base-url";
 
-describe("Get users controller", () => {
-  jest.setTimeout(100000);
+export function getUsersControllerEndToEndTests(): void {
+  describe("Get users controller", () => {
+    before(async () => {
+      for (let i = 0; i < 20; i++) {
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: `joe${i}@example.com`,
+          },
+        });
+      }
+      console.log("Registering 20 users");
+    });
 
-  beforeAll(async () => {
-    for (let i = 0; i < 20; i++) {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: `joe${i}@example.com`,
+    it("should be able list users", async () => {
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?page=1&takePage=5`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
         },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        [responseBody].map(({ userOrUsers }) => {
+          deepStrictEqual(response.status, 200);
+          deepStrictEqual(userOrUsers.length, 5);
+          deepStrictEqual(
+            responseBody.userOrUsers[0].email,
+            "joe19@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[1].email,
+            "joe18@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[2].email,
+            "joe17@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[3].email,
+            "joe16@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[4].email,
+            "joe15@example.com"
+          );
+
+          deepStrictEqual(responseBody.userOrUsers, userOrUsers);
+        });
       });
-    }
-  });
-
-  it("should be able list users", async () => {
-    const { body, statusCode } = await request(app)
-      .get("/users/get-users")
-      .query({ page: 1, takePage: 5 });
-
-    [body].map(({ userOrUsers }) => {
-      expect(statusCode).toStrictEqual(200);
-      expect(body.userOrUsers).toHaveLength(5);
-      expect(body.userOrUsers[0].email).toStrictEqual("joe19@example.com");
-      expect(body.userOrUsers[1].email).toStrictEqual("joe18@example.com");
-      expect(body.userOrUsers[2].email).toStrictEqual("joe17@example.com");
-      expect(body.userOrUsers[3].email).toStrictEqual("joe16@example.com");
-      expect(body.userOrUsers[4].email).toStrictEqual("joe15@example.com");
-
-      expect(body.userOrUsers).toStrictEqual(userOrUsers);
     });
-  });
 
-  it("should not be able list users without query params of the request", async () => {
-    await request(app).get("/users/get-users").query({}).expect(500, {
-      statusCode: 500,
-      message:
-        "The query parameters: page and takePage, must be provided in the query parameters of the request",
-      error: "Internal Server Error",
-    });
-  });
+    it("should not be able list users without query params of the request", async () => {
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
 
-  it("should not be able to list users just with page property of the query params", async () => {
-    await request(app).get("/users/get-users").query({ page: 1 }).expect(500, {
-      statusCode: 500,
-      message:
-        "The query parameters: page and takePage, must be provided in the query parameters of the request",
-      error: "Internal Server Error",
-    });
-  });
-
-  it("should not be able to list users just with takePage property of the query params", async () => {
-    await request(app)
-      .get("/users/get-users")
-      .query({ takePage: 5 })
-      .expect(500, {
-        statusCode: 500,
-        message:
-          "The query parameters: page and takePage, must be provided in the query parameters of the request",
-        error: "Internal Server Error",
+        deepStrictEqual(response.status, 500);
+        deepStrictEqual(responseBody, {
+          statusCode: 500,
+          message:
+            "The query parameters: page and takePage, must be provided in the query parameters of the request",
+          error: "Internal Server Error",
+        });
       });
-  });
-
-  it("should be able paginate", async () => {
-    const { body: pageOneBodyResponse, statusCode: pageOneStatusCode } =
-      await request(app)
-        .get("/users/get-users")
-        .query({ page: 1, takePage: 5 });
-
-    [pageOneBodyResponse].map(({ userOrUsers }) => {
-      expect(pageOneStatusCode).toStrictEqual(200);
-      expect(pageOneBodyResponse.userOrUsers).toHaveLength(5);
-      expect(pageOneBodyResponse.userOrUsers[0].email).toStrictEqual(
-        "joe19@example.com"
-      );
-      expect(pageOneBodyResponse.userOrUsers[1].email).toStrictEqual(
-        "joe18@example.com"
-      );
-      expect(pageOneBodyResponse.userOrUsers[2].email).toStrictEqual(
-        "joe17@example.com"
-      );
-      expect(pageOneBodyResponse.userOrUsers[3].email).toStrictEqual(
-        "joe16@example.com"
-      );
-      expect(pageOneBodyResponse.userOrUsers[4].email).toStrictEqual(
-        "joe15@example.com"
-      );
-
-      expect(pageOneBodyResponse.userOrUsers).toStrictEqual(userOrUsers);
     });
 
-    const { body: pageTwoBodyResponse, statusCode: pageTwoStatusCode } =
-      await request(app)
-        .get("/users/get-users")
-        .query({ page: 2, takePage: 5 });
+    it("should not be able to list users just with page property of the query params", async () => {
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?page=1`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
 
-    [pageTwoBodyResponse].map(({ userOrUsers }) => {
-      expect(pageTwoStatusCode).toStrictEqual(200);
-      expect(pageTwoBodyResponse.userOrUsers).toHaveLength(5);
+        deepStrictEqual(response.status, 500);
+        deepStrictEqual(responseBody, {
+          statusCode: 500,
+          message:
+            "The query parameters: page and takePage, must be provided in the query parameters of the request",
+          error: "Internal Server Error",
+        });
+      });
+    });
 
-      expect(pageTwoBodyResponse.userOrUsers[0].email).toStrictEqual(
-        "joe14@example.com"
-      );
-      expect(pageTwoBodyResponse.userOrUsers[1].email).toStrictEqual(
-        "joe13@example.com"
-      );
-      expect(pageTwoBodyResponse.userOrUsers[2].email).toStrictEqual(
-        "joe12@example.com"
-      );
-      expect(pageTwoBodyResponse.userOrUsers[3].email).toStrictEqual(
-        "joe11@example.com"
-      );
-      expect(pageTwoBodyResponse.userOrUsers[4].email).toStrictEqual(
-        "joe10@example.com"
-      );
+    it("should not be able to list users just with takePage property of the query params", async () => {
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?takePage=5`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
 
-      expect(pageTwoBodyResponse.userOrUsers).toStrictEqual(userOrUsers);
+        deepStrictEqual(response.status, 500);
+        deepStrictEqual(responseBody, {
+          statusCode: 500,
+          message:
+            "The query parameters: page and takePage, must be provided in the query parameters of the request",
+          error: "Internal Server Error",
+        });
+      });
+    });
+
+    it("should be able paginate", async () => {
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?page=1&takePage=5`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        [responseBody].map(({ userOrUsers }) => {
+          deepStrictEqual(response.status, 200);
+          deepStrictEqual(userOrUsers.length, 5);
+          deepStrictEqual(
+            responseBody.userOrUsers[0].email,
+            "joe19@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[1].email,
+            "joe18@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[2].email,
+            "joe17@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[3].email,
+            "joe16@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[4].email,
+            "joe15@example.com"
+          );
+
+          deepStrictEqual(responseBody.userOrUsers, userOrUsers);
+        });
+      });
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/get-users?page=2&takePage=5`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        [responseBody].map(({ userOrUsers }) => {
+          deepStrictEqual(response.status, 200);
+          deepStrictEqual(
+            responseBody.userOrUsers[0].email,
+            "joe14@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[1].email,
+            "joe13@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[2].email,
+            "joe12@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[3].email,
+            "joe11@example.com"
+          );
+          deepStrictEqual(
+            responseBody.userOrUsers[4].email,
+            "joe10@example.com"
+          );
+
+          deepStrictEqual(responseBody.userOrUsers, userOrUsers);
+        });
+      });
     });
   });
-});
+}
