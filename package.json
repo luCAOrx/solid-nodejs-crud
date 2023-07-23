@@ -6,9 +6,9 @@
   "scripts": {
     "start:dev": "tsx watch ./src/infra/http/server.ts",
     "test": "tsx --test ./src/domain/**/**/*.spec.ts",
-    "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
     "test:e2e": "tsx --test ./test/main.e2e-spec.ts",
-    "test:cov": "jest --coverage"
+    "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
+    "test:watch:e2e": "tsx --test ./test/main.e2e-spec.ts"
   },
   "author": "Lucas 'luCAO' Cunha",
   "license": "ISC",
