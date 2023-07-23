@@ -81,8 +81,6 @@ Defina uma forma de criar permissão para o usuário, defina se o usuário pode 
 - [Bcrypt.js](https://github.com/dcodeIO/bcrypt.js/)
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
-- [JestJS](https://jestjs.io/)
-- [Supertest](https://github.com/ladjs/supertest#readme)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
@@ -141,19 +139,19 @@ npm run start:dev
 npm run test
 ```
 
-### observar alterações nos testes
-```bash
-npm run test:watch
-```
-
 ### testes e2e (ponta à ponta)
 ```bash
 npm run test:e2e
 ```
 
-### cobertura de testes
+### observar alterações nos testes unitários
 ```bash
-npm run test:cov
+npm run test:watch
+```
+
+### observar alterações nos testes e2e (ponta à ponta)
+```bash
+npm run test:watch:e2e
 ```
 
 ## Comandos do docker-compose
