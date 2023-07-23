@@ -7,7 +7,7 @@
     "start:dev": "tsx watch ./src/infra/http/server.ts",
     "test": "tsx --test ./src/domain/**/**/*.spec.ts",
     "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
-    "test:e2e": "jest --config ./test/jest.e2e-config.ts",
+    "test:e2e": "tsx --test ./test/main.e2e-spec.ts",
     "test:cov": "jest --coverage"
   },
   "author": "Lucas 'luCAO' Cunha",
