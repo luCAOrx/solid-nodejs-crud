@@ -1,4 +1,4 @@
-import { type User } from "@domain/entities/user";
+import { type User } from "@domain/entities/user/user";
 
 export interface ToHttpResponse {
   id: string;
