@@ -21,7 +21,8 @@ export class UserMapper {
         email: raw.email,
         password: raw.password,
       },
-      raw.id
+      raw.id,
+      Number(raw.read_time)
     );
   }
 
