@@ -8,7 +8,7 @@
     "test": "tsx --test ./src/domain/**/**/*.spec.ts",
     "test:e2e": "tsx --test ./test/main.e2e-spec.ts",
     "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
-    "test:watch:e2e": "tsx --test ./test/main.e2e-spec.ts"
+    "test:watch:e2e": "tsx --test --watch ./test/main.e2e-spec.ts"
   },
   "author": "Lucas 'luCAO' Cunha",
   "license": "ISC",
@@ -31,12 +31,12 @@
     "eslint-plugin-promise": "^6.1.1",
     "pg": "^8.11.0",
     "prettier": "^2.8.8",
-    "prisma": "^4.15.0",
+    "prisma": "^5.0.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.3"
   },
   "dependencies": {
-    "@prisma/client": "^4.15.0",
+    "@prisma/client": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
