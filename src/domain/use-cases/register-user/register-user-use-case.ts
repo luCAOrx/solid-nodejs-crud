@@ -37,6 +37,7 @@ export class RegisterUserUseCase {
       job: jobOrError.value,
       email: emailOrError.value,
       password: passwordOrError.value,
+      role: "COMMON",
     });
 
     const userAlreadyExists = await this.userRepository.exists(
