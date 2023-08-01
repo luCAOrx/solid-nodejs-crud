@@ -13,12 +13,26 @@ const email = Email.create("lucas@example.com").value;
 const password = Password.create("1234567890").value;
 
 describe("User model", () => {
-  it("should be able to create a new user", () => {
+  it("should be able to create a new common user", () => {
     const userOrError = User.create({
       name,
       job,
       email,
       password,
+      role: "COMMON",
+    });
+
+    ok(userOrError);
+    strictEqual(userOrError, userOrError);
+  });
+
+  it("should be able to create a new admin user", () => {
+    const userOrError = User.create({
+      name,
+      job,
+      email,
+      password,
+      role: "ADMIN",
     });
 
     ok(userOrError);
