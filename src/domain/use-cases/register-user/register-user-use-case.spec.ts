@@ -46,6 +46,7 @@ describe("Register user use case", () => {
       job: "Development",
       email: "lucas@example.com",
       password: "1234567890",
+      role: "COMMON",
     });
 
     await inMemoryUserDatabase.create(user);
