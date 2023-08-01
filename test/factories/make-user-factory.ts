@@ -2,7 +2,7 @@ import { Email } from "@domain/entities/email/email";
 import { Job } from "@domain/entities/job/job";
 import { Name } from "@domain/entities/name/name";
 import { Password } from "@domain/entities/password/password";
-import { User } from "@domain/entities/user/user";
+import { type Role, User } from "@domain/entities/user/user";
 import { type InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { BASE_URL } from "@test/utils/base-url";
 
@@ -13,6 +13,7 @@ interface UserProps {
   job: string;
   email: string;
   password: string;
+  role: Role;
 }
 
 type Override = Partial<UserProps>;
@@ -35,6 +36,7 @@ export class MakeUserFactory {
       job: jobOrError.value,
       email: emailOrError.value,
       password: passwordOrError.value,
+      role: "COMMON",
       ...override,
     });
 
