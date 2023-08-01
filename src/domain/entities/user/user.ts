@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
 
+export type Role = "ADMIN" | "COMMON";
+
 interface UserProps {
   name: string;
   job: string;
   email: string;
   password: string;
+  role: Role;
 }
 
 export class User {
