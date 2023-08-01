@@ -1,4 +1,4 @@
-import { User } from "@domain/entities/user/user";
+import { type Role, User } from "@domain/entities/user/user";
 import { type User as Users } from "@prisma/client";
 
 interface ToPersistenceResponse {
@@ -7,6 +7,7 @@ interface ToPersistenceResponse {
   job: string;
   email: string;
   password: string;
+  role: Role;
   read_time: number;
   created_at: Date;
   updated_at: Date;
@@ -20,22 +21,30 @@ export class UserMapper {
         job: raw.job,
         email: raw.email,
         password: raw.password,
+        role: "COMMON",
       },
       raw.id,
       Number(raw.read_time)
     );
   }
 
-  static toPersistence(user: User): ToPersistenceResponse {
+  static toPersistence({
+    id,
+    props: { name, job, email, password, role },
+    read_time,
+    updated_at,
+    created_at,
+  }: User): ToPersistenceResponse {
     return {
-      id: user.id,
-      name: user.props.name,
-      job: user.props.job,
-      email: user.props.email,
-      password: user.props.password,
-      read_time: user.read_time,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
+      id,
+      name,
+      job,
+      email,
+      password,
+      role,
+      read_time,
+      created_at,
+      updated_at,
     };
   }
 }
