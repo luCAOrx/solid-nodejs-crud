@@ -48,6 +48,7 @@ export class UpdateUserUseCase {
         job: jobOrError.value,
         email: emailOrError.value,
         password: passwordOrError.value,
+        role: userFound.props.role,
       },
       userFound.id,
       userFound.read_time,
