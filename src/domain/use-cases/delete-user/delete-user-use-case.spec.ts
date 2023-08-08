@@ -2,6 +2,7 @@ import { strictEqual, rejects } from "node:assert";
 import { describe, it } from "node:test";
 
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
+import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { RegisterUserUseCase } from "../register-user/register-user-use-case";
@@ -9,7 +10,11 @@ import { DeleteUserUseCase } from "./delete-user-use-case";
 
 describe("Delete user use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
-  const registerUserUseCase = new RegisterUserUseCase(inMemoryUserDatabase);
+  const userSecurityProvider = new UserSecurityProvider();
+  const registerUserUseCase = new RegisterUserUseCase(
+    inMemoryUserDatabase,
+    userSecurityProvider
+  );
   const deleteUserUseCase = new DeleteUserUseCase(inMemoryUserDatabase);
 
   it("should be able delete user", async () => {
