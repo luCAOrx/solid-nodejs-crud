@@ -5,6 +5,7 @@ import { User } from "@domain/entities/user/user";
 import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
+import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
@@ -12,7 +13,11 @@ import { UpdateUserUseCase } from "./update-user-use-case";
 
 describe("Update user use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
-  const updateUserUseCase = new UpdateUserUseCase(inMemoryUserDatabase);
+  const userSecurityProvider = new UserSecurityProvider();
+  const updateUserUseCase = new UpdateUserUseCase(
+    inMemoryUserDatabase,
+    userSecurityProvider
+  );
 
   it("should be able update all data from user", async () => {
     const user = await new MakeUserFactory().toDomain({
@@ -137,7 +142,7 @@ describe("Update user use case", () => {
     strictEqual(inMemoryUserDatabase.users[4].id, updatedUser.id);
     strictEqual(
       inMemoryUserDatabase.users[4].props.password,
-      "updated-password"
+      "ea5b3306fc0aad6abdcaecc71b625caf09b2c80ab0d25d350fa89d781d8002a6ad"
     );
     strictEqual(inMemoryUserDatabase.users[4], updatedUser);
     strictEqual(inMemoryUserDatabase.users.length, 5);
