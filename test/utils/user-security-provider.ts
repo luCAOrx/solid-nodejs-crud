@@ -17,6 +17,6 @@ export class UserSecurityProvider implements SecurityProvider {
   }
 
   async hash({ password, salt }: HashProps): Promise<string> {
-    return "1234567890";
+    return "ea5b3306fc0aad6abdcaecc71b625caf09b2c80ab0d25d350fa89d781d8002a6ad";
   }
 }
