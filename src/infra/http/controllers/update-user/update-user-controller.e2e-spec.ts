@@ -8,17 +8,17 @@ import { BASE_URL } from "@test/utils/base-url";
 
 export function updateUserControllerEndToEndTests(): void {
   describe("Update user controller", () => {
-    it("should be able update user", async () => {
+    it("should be able update all data from user", async () => {
       await new MakeUserFactory().toHttp({
         override: {
-          email: "update-user-test1@example.com",
+          email: "update-all-data-from-user-test@example.com",
         },
       });
 
       const authenticateUserResponse = await (
         await MakeRequestLoginFactory.execute({
           data: {
-            email: "update-user-test1@example.com",
+            email: "update-all-data-from-user-test@example.com",
             password: "1234567890",
           },
         })
@@ -57,17 +57,19 @@ export function updateUserControllerEndToEndTests(): void {
       });
     });
 
-    it("should not be able to update user with existing email", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test@example.com",
-        },
-      });
+    it("should be able update just name from user", async () => {
+      const registeredUserResponseBody = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "update-just-name-from-user-test@example.com",
+          },
+        })
+      ).json();
 
       const authenticateUserResponse = await (
         await MakeRequestLoginFactory.execute({
           data: {
-            email: "update-user-test@example.com",
+            email: "update-just-name-from-user-test@example.com",
             password: "1234567890",
           },
         })
@@ -83,10 +85,207 @@ export function updateUserControllerEndToEndTests(): void {
           authorization: `Bearer ${String(authenticateUserResponse.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
-          email: "update-user-test@example.com",
-          password: "1234567890",
+          ...registeredUserResponseBody.user,
+          name: "Frank Wells",
+          password: "12345678900102030405",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 201);
+        deepStrictEqual(responseBody, {
+          user: {
+            id: responseBody.user.id,
+            name: "Frank Wells",
+            job: "doctor",
+            email: "update-just-name-from-user-test@example.com",
+            read_time: 0,
+            created_at: responseBody.user.created_at,
+            updated_at: responseBody.user.updated_at,
+          },
+        });
+      });
+    });
+
+    it("should be able update just job from user", async () => {
+      const registeredUserResponseBody = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "update-just-job-from-user-test@example.com",
+          },
+        })
+      ).json();
+
+      const authenticateUserResponse = await (
+        await MakeRequestLoginFactory.execute({
+          data: {
+            email: "update-just-job-from-user-test@example.com",
+            password: "1234567890",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/update-user/${String(
+          authenticateUserResponse.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+        },
+        data: {
+          ...registeredUserResponseBody.user,
+          job: "Driver",
+          password: "12345678900102030405",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 201);
+        deepStrictEqual(responseBody, {
+          user: {
+            id: responseBody.user.id,
+            name: "John Doe",
+            job: "driver",
+            email: "update-just-job-from-user-test@example.com",
+            read_time: 0,
+            created_at: responseBody.user.created_at,
+            updated_at: responseBody.user.updated_at,
+          },
+        });
+      });
+    });
+
+    it("should be able update just email from user", async () => {
+      const registeredUserResponseBody = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "update-just-email-from-user-test@example.com",
+          },
+        })
+      ).json();
+
+      const authenticateUserResponse = await (
+        await MakeRequestLoginFactory.execute({
+          data: {
+            email: "update-just-email-from-user-test@example.com",
+            password: "1234567890",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/update-user/${String(
+          authenticateUserResponse.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+        },
+        data: {
+          ...registeredUserResponseBody.user,
+          email: "updated-email-test@example.com",
+          password: "12345678900102030405",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 201);
+        deepStrictEqual(responseBody, {
+          user: {
+            id: responseBody.user.id,
+            name: "John Doe",
+            job: "doctor",
+            email: "updated-email-test@example.com",
+            read_time: 0,
+            created_at: responseBody.user.created_at,
+            updated_at: responseBody.user.updated_at,
+          },
+        });
+      });
+    });
+
+    it("should be able update just password from user", async () => {
+      const registeredUserResponseBody = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "update-just-password-from-user-test@example.com",
+          },
+        })
+      ).json();
+
+      const authenticateUserResponse = await (
+        await MakeRequestLoginFactory.execute({
+          data: {
+            email: "update-just-password-from-user-test@example.com",
+            password: "1234567890",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/update-user/${String(
+          authenticateUserResponse.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+        },
+        data: {
+          ...registeredUserResponseBody.user,
+          password: "12345678900102030405",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 201);
+        deepStrictEqual(responseBody, {
+          user: {
+            id: responseBody.user.id,
+            name: "John Doe",
+            job: "doctor",
+            email: "update-just-password-from-user-test@example.com",
+            read_time: 0,
+            created_at: responseBody.user.created_at,
+            updated_at: responseBody.user.updated_at,
+          },
+        });
+      });
+    });
+
+    it("should not be able to update user with existing email", async () => {
+      const registeredUserResponseBody = await (
+        await new MakeUserFactory().toHttp({
+          override: {
+            email: "update-user-with-existing-email-test@example.com",
+          },
+        })
+      ).json();
+
+      const authenticateUserResponse = await (
+        await MakeRequestLoginFactory.execute({
+          data: {
+            email: "update-user-with-existing-email-test@example.com",
+            password: "1234567890",
+          },
+        })
+      ).json();
+
+      await MakeRequestFactory.execute({
+        url: `${BASE_URL}/users/update-user/${String(
+          authenticateUserResponse.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+        },
+        data: {
+          ...registeredUserResponseBody.user,
+          email: "frank@example.com",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -121,209 +320,6 @@ export function updateUserControllerEndToEndTests(): void {
           statusCode: 404,
           message: "Page not found",
           error: "Not Found",
-        });
-      });
-    });
-
-    it("should not be able to update user without properties of request body", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test2@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test2@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
-      await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
-          authenticateUserResponse.user.id
-        )}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
-        },
-        data: {},
-      }).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 500);
-        deepStrictEqual(responseBody, {
-          statusCode: 500,
-          message:
-            "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
-        });
-      });
-    });
-
-    it("should not be able to update user just with name property of the request body", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test3@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test3@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
-      await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
-          authenticateUserResponse.user.id
-        )}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
-        },
-        data: {
-          name: "Francis Fran",
-        },
-      }).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 500);
-        deepStrictEqual(responseBody, {
-          statusCode: 500,
-          message:
-            "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
-        });
-      });
-    });
-
-    it("should not be able to update user just with job property of the request body", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test4@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test4@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
-      await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
-          authenticateUserResponse.user.id
-        )}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
-        },
-        data: {
-          job: "Mechanic",
-        },
-      }).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 500);
-        deepStrictEqual(responseBody, {
-          statusCode: 500,
-          message:
-            "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
-        });
-      });
-    });
-
-    it("should not be able to update user just with email property of the request body", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test5@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test5@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
-      await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
-          authenticateUserResponse.user.id
-        )}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
-        },
-        data: {
-          email: "updated-user5@example.com",
-        },
-      }).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 500);
-        deepStrictEqual(responseBody, {
-          statusCode: 500,
-          message:
-            "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
-        });
-      });
-    });
-
-    it("should not be able to update user just with password property of the request body", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test6@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test6@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
-      await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
-          authenticateUserResponse.user.id
-        )}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
-        },
-        data: {
-          password: "1234512345",
-        },
-      }).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 500);
-        deepStrictEqual(responseBody, {
-          statusCode: 500,
-          message:
-            "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
         });
       });
     });
