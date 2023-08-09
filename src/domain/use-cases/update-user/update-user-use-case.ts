@@ -10,7 +10,7 @@ import { UserAlreadyExistsError } from "../register-user/errors/user-already-exi
 
 interface UpdateUserRequest {
   id: string;
-  user: {
+  data: {
     name: string;
     job: string;
     email: string;
@@ -27,15 +27,15 @@ export class UpdateUserUseCase {
 
   async execute({
     id,
-    user: { name, job, email, password },
+    data: { name, job, email, password },
   }: UpdateUserRequest): Promise<UpdateUserResponse> {
     const userFound = await this.userRepository.findById(id);
+    const userAlreadyExists = await this.userRepository.exists(email);
 
     if (userFound === null) throw new UserNotFoundError();
 
-    const userAlreadyExists = await this.userRepository.exists(email);
-
-    if (userAlreadyExists) throw new UserAlreadyExistsError();
+    if (email !== userFound.props.email && userAlreadyExists)
+      throw new UserAlreadyExistsError();
 
     const nameOrError = Name.create(name);
     const jobOrError = Job.create(job);
@@ -56,6 +56,7 @@ export class UpdateUserUseCase {
     );
 
     userFound.props = user.props;
+    userFound.updated_at = user.updated_at;
 
     await this.userRepository.update(userFound);
 
