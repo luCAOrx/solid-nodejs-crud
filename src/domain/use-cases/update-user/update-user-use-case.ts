@@ -3,6 +3,7 @@ import { Job } from "@domain/entities/job/job";
 import { Name } from "@domain/entities/name/name";
 import { Password } from "@domain/entities/password/password";
 import { User } from "@domain/entities/user/user";
+import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
@@ -23,7 +24,10 @@ interface UpdateUserResponse {
 }
 
 export class UpdateUserUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userSecurityProvider: SecurityProvider
+  ) {}
 
   async execute({
     id,
@@ -42,12 +46,17 @@ export class UpdateUserUseCase {
     const emailOrError = Email.create(email);
     const passwordOrError = Password.create(password);
 
+    const hashedPassword = await this.userSecurityProvider.hash({
+      password: passwordOrError.value,
+      salt: 14,
+    });
+
     const user = User.create(
       {
         name: nameOrError.value,
         job: jobOrError.value,
         email: emailOrError.value,
-        password: passwordOrError.value,
+        password: hashedPassword,
         role: userFound.props.role,
       },
       userFound.id,
