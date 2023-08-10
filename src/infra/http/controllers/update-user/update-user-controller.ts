@@ -14,6 +14,7 @@ import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-
 import { PasswordShouldBeLessThan255CharactersError } from "@domain/validations/password/errors/password-should-be-less-than-255-characters-error";
 import { PasswordShouldBeThan10CharactersError } from "@domain/validations/password/errors/password-should-be-than-10-characters-error";
 import { PasswordShouldNotBeEmptyError } from "@domain/validations/password/errors/password-should-not-be-empty-error";
+import { UserSecurityProvider } from "@infra/http/providers/user-security-provider";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
@@ -35,7 +36,11 @@ export class UpdateUserController {
       request.body as UpdateUserRequestBodyProps;
 
     const prismaUserRepository = new PrismaUserRepository();
-    const updatedUserUseCase = new UpdateUserUseCase(prismaUserRepository);
+    const userSecurityProvider = new UserSecurityProvider();
+    const updatedUserUseCase = new UpdateUserUseCase(
+      prismaUserRepository,
+      userSecurityProvider
+    );
 
     await updatedUserUseCase
       .execute({
