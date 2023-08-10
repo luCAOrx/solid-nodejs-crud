@@ -1,26 +1,31 @@
 import { strictEqual, ok } from "node:assert";
 import { describe, it, before } from "node:test";
 
-import { User } from "@domain/entities/user/user";
+import { type User } from "@domain/entities/user/user";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
+import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
+import { RegisterUserUseCase } from "../register-user/register-user-use-case";
 import { GetUsersUseCase } from "./get-users-use-case";
 
 describe("Get users use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
+  const userSecurityProvider = new UserSecurityProvider();
+  const registerUserUseCase = new RegisterUserUseCase(
+    inMemoryUserDatabase,
+    userSecurityProvider
+  );
+
   const getUsersUseCase = new GetUsersUseCase(inMemoryUserDatabase);
 
   before(async () => {
     for (let i = 0; i < 20; i++) {
-      const user = User.create({
+      await registerUserUseCase.execute({
         name: "Rafael",
         job: "Actor",
         email: `fernando${i}@example.com`,
         password: "1234567890",
-        role: "COMMON",
       });
-
-      await inMemoryUserDatabase.create(user);
     }
   });
 
