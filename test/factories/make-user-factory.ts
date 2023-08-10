@@ -1,10 +1,8 @@
-import { Email } from "@domain/entities/email/email";
-import { Job } from "@domain/entities/job/job";
-import { Name } from "@domain/entities/name/name";
-import { Password } from "@domain/entities/password/password";
-import { type Role, User } from "@domain/entities/user/user";
-import { type InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
+import { type Role, type User } from "@domain/entities/user/user";
+import { RegisterUserUseCase } from "@domain/use-cases/register-user/register-user-use-case";
+import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { BASE_URL } from "@test/utils/base-url";
+import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { MakeRequestFactory } from "./make-request-factory";
 
@@ -26,17 +24,18 @@ export class MakeUserFactory {
     inMemoryDatabase: InMemoryUserDatabase;
     override?: Override;
   }): Promise<User> {
-    const nameOrError = Name.create("Joe Smith");
-    const jobOrError = Job.create("Development");
-    const emailOrError = Email.create("joe@example.com");
-    const passwordOrError = Password.create("1234567890");
+    const inMemoryUserDatabase = new InMemoryUserDatabase();
+    const userSecurityProvider = new UserSecurityProvider();
+    const registerUserUseCase = new RegisterUserUseCase(
+      inMemoryUserDatabase,
+      userSecurityProvider
+    );
 
-    const user = User.create({
-      name: nameOrError.value,
-      job: jobOrError.value,
-      email: emailOrError.value,
-      password: passwordOrError.value,
-      role: "COMMON",
+    const { user } = await registerUserUseCase.execute({
+      name: "Joe Smith",
+      job: "Development",
+      email: "joe@example.com",
+      password: "1234567890",
       ...override,
     });
 
