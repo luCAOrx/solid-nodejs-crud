@@ -24,7 +24,7 @@ const swaggerOptions: OAS3Options = {
     },
     servers: [
       {
-        url: "http://localhost:3333",
+        url: String(process.env.DOCUMENTATION_SERVER_URL),
         description: "Test API",
       },
     ],
