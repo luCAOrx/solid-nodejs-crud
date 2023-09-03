@@ -5,7 +5,7 @@ import { Client } from "pg";
 
 dotenv.config({ path: ".env" });
 
-class PrismaTestEnvironment {
+export class PrismaTestEnvironment {
   private readonly schema: string;
   private readonly connectionString: string;
 
@@ -40,11 +40,3 @@ class PrismaTestEnvironment {
     await client.end();
   }
 }
-
-export const prismaTestEnvironmentSetup = async (): Promise<void> => {
-  await new PrismaTestEnvironment().setup();
-};
-
-export const prismaTestEnvironmentTeardown = async (): Promise<void> => {
-  await new PrismaTestEnvironment().teardown();
-};
