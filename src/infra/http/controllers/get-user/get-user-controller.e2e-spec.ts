@@ -4,7 +4,6 @@ import { describe, it } from "node:test";
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function getUserControllerEndToEndTests(): void {
   describe("Get user controller", () => {
@@ -25,7 +24,7 @@ export function getUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "GET",
@@ -51,7 +50,7 @@ export function getUserControllerEndToEndTests(): void {
 
     it("should not be able get a user without route params of the request", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-user/`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +84,7 @@ export function getUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "GET",
@@ -109,7 +108,7 @@ export function getUserControllerEndToEndTests(): void {
       });
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "GET",
@@ -149,7 +148,7 @@ export function getUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-user/12345`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/12345`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
