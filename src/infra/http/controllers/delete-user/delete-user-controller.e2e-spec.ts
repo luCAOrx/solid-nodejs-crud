@@ -4,7 +4,6 @@ import { describe, it } from "node:test";
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function deleteUserControllerEndToEndTests(): void {
   describe("Delete user controller", () => {
@@ -25,7 +24,7 @@ export function deleteUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "DELETE",
@@ -43,7 +42,7 @@ export function deleteUserControllerEndToEndTests(): void {
 
     it("should not be able delete a user without route params of the request", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/`,
         method: "DELETE",
         headers: {},
         data: {},
@@ -76,7 +75,7 @@ export function deleteUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/fake-id`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/fake-id`,
         method: "DELETE",
         headers: {
           authorization: `Bearer ${String(authenticateUserResponse.token)}`,
