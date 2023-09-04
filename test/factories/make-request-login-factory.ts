@@ -1,5 +1,3 @@
-import { BASE_URL } from "@test/utils/base-url";
-
 import { MakeRequestFactory } from "./make-request-factory";
 
 interface MakeRequestLoginFactoryProps {
@@ -11,7 +9,7 @@ export class MakeRequestLoginFactory {
     data,
   }: MakeRequestLoginFactoryProps): Promise<Response> {
     return await MakeRequestFactory.execute({
-      url: `${BASE_URL}/users/authenticate`,
+      url: `${String(process.env.TEST_SERVER_URL)}/users/authenticate`,
       method: "POST",
       headers: {
         "content-type": "application/json",
