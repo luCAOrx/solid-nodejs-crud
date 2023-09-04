@@ -4,7 +4,6 @@ import { describe, it } from "node:test";
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function updateUserControllerEndToEndTests(): void {
   describe("Update user controller", () => {
@@ -25,7 +24,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -76,7 +75,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -126,7 +125,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -176,7 +175,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -226,7 +225,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -275,7 +274,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -301,7 +300,7 @@ export function updateUserControllerEndToEndTests(): void {
 
     it("should not be able to update user without route params", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -341,7 +340,9 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/fake-user-id}`,
+        url: `${String(
+          process.env.TEST_SERVER_URL
+        )}/users/update-user/fake-user-id}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -382,7 +383,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -425,7 +426,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -468,7 +469,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -511,7 +512,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -554,7 +555,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -597,7 +598,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -640,7 +641,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -685,7 +686,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -728,7 +729,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -771,7 +772,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
@@ -814,7 +815,7 @@ export function updateUserControllerEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/update-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           authenticateUserResponse.user.id
         )}`,
         method: "PUT",
