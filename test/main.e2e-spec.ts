@@ -1,9 +1,7 @@
 import { describe, before, after } from "node:test";
-import {
-  prismaTestEnvironmentSetup,
-  prismaTestEnvironmentTeardown,
-} from "prisma/prismaTestEnvironment";
+import { PrismaTestEnvironment } from "prisma/prismaTestEnvironment";
 
+import { app } from "@infra/http/app";
 import { authenticateUserControllerEndToEndTests } from "@infra/http/controllers/authenticate-user/authenticate-user-controller.e2e-spec";
 import { deleteUserControllerEndToEndTests } from "@infra/http/controllers/delete-user/delete-user-controller.e2e-spec";
 import { getUserControllerEndToEndTests } from "@infra/http/controllers/get-user/get-user-controller.e2e-spec";
@@ -12,12 +10,14 @@ import { registerUserControllerEndToEndTests } from "@infra/http/controllers/reg
 import { updateUserControllerEndToEndTests } from "@infra/http/controllers/update-user/update-user-controller.e2e-spec";
 import { pageNotFoundErrorEndToEndTests } from "@infra/http/errors/page-not-found/page-not-found-error.e2e-spec";
 import { ensureAuthenticatedMiddlewareEndToEndTests } from "@infra/http/middlewares/ensure-authenticated-middleware.e2e-spec";
-import { server } from "@infra/http/server";
+
+const prismaTestEnvironment = new PrismaTestEnvironment();
+const server = app.listen(process.env.TEST_SERVER_PORT);
 
 describe("End to end (E2E) tests", () => {
   before(async () => {
     console.log("Up database and run migrations");
-    await prismaTestEnvironmentSetup();
+    await prismaTestEnvironment.setup();
     await new Promise((resolve) => server.once("listening", resolve));
   });
 
@@ -30,8 +30,8 @@ describe("End to end (E2E) tests", () => {
   pageNotFoundErrorEndToEndTests();
   ensureAuthenticatedMiddlewareEndToEndTests();
 
-  after(async (done) => {
-    server.close(done);
-    await prismaTestEnvironmentTeardown();
+  after(async () => {
+    server.close();
+    await prismaTestEnvironment.teardown();
   });
 });
