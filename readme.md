@@ -91,18 +91,18 @@ Defina uma forma de criar permissão para o usuário, defina se o usuário pode 
 
 ## Inicializando a aplicação
 
-### Subir os containers do docker
-```bash
-sudo make up
-```
+### Adicione as variáveis de ambiente
+Crie um arquivo na raiz do projeto chamado `.env`, copie os exemplos contidos neste arquivo [.env.example]('./.env.example') e cole dentro do arquivo `.env` recém criado, altere se necessário, os valores das variáveis.
 
 ### Instalar as dependências
 ```bash
 npm install
 ```
 
-### Adicione as variáveis de ambiente
-Renomeie o arquivo `.env.example` para `.env` e altere se necessário os valores das variáveis.
+### Subir os containers do docker
+```bash
+sudo make up
+```
 
 ### Execute as migrações
 ```bash
@@ -141,7 +141,7 @@ npm run test
 
 ### testes e2e (ponta à ponta)
 ```bash
-npm run test:e2e
+sudo make test-e2e
 ```
 
 ### observar alterações nos testes unitários
@@ -151,7 +151,7 @@ npm run test:watch
 
 ### observar alterações nos testes e2e (ponta à ponta)
 ```bash
-npm run test:watch:e2e
+sudo make test-watch-e2e
 ```
 
 ## Comandos do docker-compose
@@ -185,6 +185,47 @@ sudo make restart-database
 ```bash
 sudo make stop-database 
 ```
-  
+
+#### Servidor
+##### Subir o container
+```bash
+sudo make start-server
+```
+
+##### Mostrar os logs
+```bash
+sudo make logs-server
+```
+
+##### Reiniciar o container
+```bash
+sudo make restart-server 
+```
+
+##### Parar o container
+```bash
+sudo make stop-server 
+```
+
+##### Executar testes unitários
+```bash
+sudo make test-unit
+```
+
+##### Executar testes e2e (ponta à ponta)
+```bash
+sudo make test-e2e
+```
+
+##### Observar alterações nos testes e2e (ponta à ponta)
+```bash
+sudo make test-watch-e2e
+```
+
+##### Entrar o terminal do container
+```bash
+sudo make server-container-terminal
+```
+
 ## Licença
 Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
