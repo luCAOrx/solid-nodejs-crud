@@ -3,7 +3,6 @@ import { describe, it } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function registerUserControllerEndToEndTests(): void {
   describe("Register user controller", () => {
@@ -43,7 +42,7 @@ export function registerUserControllerEndToEndTests(): void {
 
     it("should not be able to register new user without properties of request body", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/register`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +63,7 @@ export function registerUserControllerEndToEndTests(): void {
 
     it("should not be able to register new user just with name property of the request body", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/register`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +84,7 @@ export function registerUserControllerEndToEndTests(): void {
 
     it("should not be able to register new user just with job property of the request body", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/register`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +105,7 @@ export function registerUserControllerEndToEndTests(): void {
 
     it("should not be able to register new user just with email property of the request body", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/register`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +126,7 @@ export function registerUserControllerEndToEndTests(): void {
 
     it("should not be able to register new user just with password property of the request body", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/register`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
