@@ -48,6 +48,10 @@ test-unit:
 test-e2e:
 	docker-compose exec -u node solid-nodejs-crud-server sh -c 'npm run test:e2e'
 
+.PHONY: test-watch-e2e
+test-watch-e2e:
+	docker-compose exec -u node solid-nodejs-crud-server sh -c 'npm run test:watch:e2e'
+
 .PHONY: server-container-terminal
 server-container-terminal:
 	docker-compose exec -u node solid-nodejs-crud-server sh
