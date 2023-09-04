@@ -1,7 +1,6 @@
 import { type Role, type User } from "@domain/entities/user/user";
 import { RegisterUserUseCase } from "@domain/use-cases/register-user/register-user-use-case";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
-import { BASE_URL } from "@test/utils/base-url";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { MakeRequestFactory } from "./make-request-factory";
@@ -50,7 +49,7 @@ export class MakeUserFactory {
     override?: Override;
   }): Promise<Response> {
     return await MakeRequestFactory.execute({
-      url: `${BASE_URL}/users/register`,
+      url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
