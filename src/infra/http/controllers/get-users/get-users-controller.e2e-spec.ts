@@ -3,7 +3,6 @@ import { describe, it, before } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function getUsersControllerEndToEndTests(): void {
   describe("Get users controller", () => {
@@ -20,7 +19,9 @@ export function getUsersControllerEndToEndTests(): void {
 
     it("should be able list users", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?page=1&takePage=5`,
+        url: `${String(
+          process.env.TEST_SERVER_URL
+        )}/users/get-users?page=1&takePage=5`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +60,7 @@ export function getUsersControllerEndToEndTests(): void {
 
     it("should not be able list users without query params of the request", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-users?`,
         method: "GET",
         headers: {
           "Content-type": "application/json",
@@ -79,7 +80,7 @@ export function getUsersControllerEndToEndTests(): void {
 
     it("should not be able to list users just with page property of the query params", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?page=1`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/get-users?page=1`,
         method: "GET",
         headers: {
           "Content-type": "application/json",
@@ -99,7 +100,9 @@ export function getUsersControllerEndToEndTests(): void {
 
     it("should not be able to list users just with takePage property of the query params", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?takePage=5`,
+        url: `${String(
+          process.env.TEST_SERVER_URL
+        )}/users/get-users?takePage=5`,
         method: "GET",
         headers: {
           "Content-type": "application/json",
@@ -119,7 +122,9 @@ export function getUsersControllerEndToEndTests(): void {
 
     it("should be able paginate", async () => {
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?page=1&takePage=5`,
+        url: `${String(
+          process.env.TEST_SERVER_URL
+        )}/users/get-users?page=1&takePage=5`,
         method: "GET",
         headers: {
           "Content-type": "application/json",
@@ -156,7 +161,9 @@ export function getUsersControllerEndToEndTests(): void {
       });
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/get-users?page=2&takePage=5`,
+        url: `${String(
+          process.env.TEST_SERVER_URL
+        )}/users/get-users?page=2&takePage=5`,
         method: "GET",
         headers: {
           "Content-type": "application/json",
