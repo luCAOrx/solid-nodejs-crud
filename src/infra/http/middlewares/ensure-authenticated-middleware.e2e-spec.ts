@@ -3,7 +3,6 @@ import { describe, it } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
-import { BASE_URL } from "@test/utils/base-url";
 
 export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
   describe("Ensure authenticate middleware", () => {
@@ -17,7 +16,7 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
           registerUserResponse.user.id
         )}`,
         method: "DELETE",
@@ -46,7 +45,7 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
           registerUserResponse.user.id
         )}`,
         method: "DELETE",
@@ -76,7 +75,7 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
           registerUserResponse.user.id
         )}`,
         method: "DELETE",
@@ -106,7 +105,7 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
       ).json();
 
       await MakeRequestFactory.execute({
-        url: `${BASE_URL}/users/delete-user/${String(
+        url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
           registerUserResponse.user.id
         )}`,
         method: "DELETE",
