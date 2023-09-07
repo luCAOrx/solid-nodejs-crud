@@ -16,15 +16,15 @@ datasource db {
 }
 
 model User {
-  id         String    @id
-  name       String
-  job        String
-  email      String    @unique
-  password   String
-  read_time  BigInt
-  role       Role
-  created_at DateTime  @default(now())
-  updated_at DateTime?
+  id             String           @id
+  name           String
+  job            String
+  email          String           @unique
+  password       String
+  read_time      BigInt
+  role           Role
+  created_at     DateTime         @default(now())
+  updated_at     DateTime?
 
   @@map("user")
 }
