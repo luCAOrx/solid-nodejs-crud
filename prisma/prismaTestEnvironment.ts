@@ -27,7 +27,8 @@ export class PrismaTestEnvironment {
   async setup(): Promise<void> {
     process.env.DATABASE_URL = this.connectionString;
 
-    execSync("npx prisma migrate dev");
+    execSync("npm run prisma:migrate");
+    execSync("npm run prisma:seed");
   }
 
   async teardown(): Promise<void> {
