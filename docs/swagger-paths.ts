@@ -20,7 +20,7 @@ export const swaggerPaths: Paths = {
     get: getUserRequest,
   },
 
-  "/users/get-users": {
+  "/users/get-users/{id}": {
     get: getUsersRequest,
   },
 
