@@ -25,4 +25,4 @@ services:
     volumes:
       - .:/usr/app
     working_dir: /usr/app
-    command: npm run start:dev
+    command: sh -c "npm run prisma:migrate && npm run prisma:seed && npm run start:dev"
