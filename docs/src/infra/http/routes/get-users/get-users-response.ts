@@ -61,10 +61,24 @@ const httpBadRequestResponse: Response = {
   description: "HTTP response to error in get user",
   content: {
     "application/json": {
-      example: {
-        statusCode: 400,
-        message: "Error listing users",
-        error: "Bad request",
+      examples: {
+        userNotFound: {
+          summary: "User not found",
+          value: {
+            statusCode: 400,
+            message: "User not found",
+            error: "Bad request",
+          },
+        },
+
+        accessDenied: {
+          summary: "Access denied",
+          value: {
+            statusCode: 400,
+            message: "Access denied",
+            error: "Bad request",
+          },
+        },
       },
     },
   },
