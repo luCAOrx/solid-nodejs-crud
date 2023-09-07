@@ -7,7 +7,7 @@
   <a href="#requisitos">Requisitos</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#inicializando-a-aplicação">Inicializando a aplicação</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <br/>
-  <a href="#executando-a-aplicação">Executando a aplicação</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#scripts-da-aplicação">Scripts da aplicação</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#documentação-da-api">Documentação da API</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#teste">Teste</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#comandos-do-docker-compose">Comandos do docker-compose</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
@@ -104,32 +104,47 @@ npm install
 sudo make up
 ```
 
-### Execute as migrações
-```bash
-npx prisma migrate dev
-```
+## Scripts da aplicação
 
-### Execute a aplicação em modo de desenvolvimento
+### executar a aplicação em modo de desenvolvimento
 ```bash
 npm run start:dev
 ```
 
-## Executando a aplicação
-
-### modo de desenvolvimento
+### executar testes unitários
 ```bash
-npm run start:dev
+npm run test
 ```
 
-### modo de produção
+### observar alterações nos testes unitários
 ```bash
-npm run start:prod
+npm run test:watch
+```
+
+### executar testes e2e(Ponta à ponta)
+```bash
+npm run test:e2e
+```
+
+### observar alterações nos testes e2e(Ponta à ponta)
+```bash
+npm run test:watch:e2e
+```
+
+### executar migrações para o banco de dados
+```bash
+npm run prisma:migrate
+```
+
+### executar seeds para o banco de dados
+```bash
+npm run prisma:seed
 ```
 
 ## Documentação da API
-Inicie o servidor em modo de desenvolvimento e [acesse](http://localhost:3333/api-docs)
-```bash
-npm run start:dev
+Se os containers do banco de dados e do servidor estão ativos, basta clicar [aqui](http://localhost:3333/api-docs) para ser redirecionado à página da documentação, se os containers não estão ativos, execute este comando para ativa-los 
+```bash 
+sudo make up
 ```
 
 ## Teste
@@ -137,6 +152,10 @@ npm run start:dev
 ### testes unitários
 ```bash
 npm run test
+```
+ou
+```bash
+sudo make test-unit
 ```
 
 ### testes e2e (ponta à ponta)
