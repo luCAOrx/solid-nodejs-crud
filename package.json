@@ -8,7 +8,9 @@
     "test": "tsx --test ./src/domain/**/**/*.spec.ts",
     "test:e2e": "tsx --test ./test/main.e2e-spec.ts",
     "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
-    "test:watch:e2e": "tsx --test --watch ./test/main.e2e-spec.ts"
+    "test:watch:e2e": "tsx --test --watch ./test/main.e2e-spec.ts",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:seed": "tsx ./prisma/seeds/*.ts"
   },
   "author": "Lucas 'luCAO' Cunha",
   "license": "ISC",
