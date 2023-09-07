@@ -1,10 +1,8 @@
 import { type User } from "@domain/entities/user/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
-import { PrismaClient } from "@prisma/client";
 
+import { prisma } from "../libs/prisma-client";
 import { UserMapper } from "../mappers/user-mapper";
-
-const prisma = new PrismaClient();
 
 export class PrismaUserRepository implements UserRepository {
   async exists(email: string): Promise<boolean> {
