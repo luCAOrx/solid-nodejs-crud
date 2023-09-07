@@ -21,7 +21,7 @@ export class UserMapper {
         job: raw.job,
         email: raw.email,
         password: raw.password,
-        role: "COMMON",
+        role: raw.role,
       },
       raw.id,
       Number(raw.read_time)
