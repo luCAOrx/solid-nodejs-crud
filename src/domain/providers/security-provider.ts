@@ -4,7 +4,7 @@ export interface CompareProps {
 }
 
 export interface SignProps {
-  payload: string | Buffer | object;
+  payload: { id: string };
   secretOrPrivateKey: string;
   expiresIn?: string | number | undefined;
 }
@@ -18,4 +18,5 @@ export abstract class SecurityProvider {
   abstract compare(params: CompareProps): Promise<boolean>;
   abstract sign(params: SignProps): string;
   abstract hash(params: HashProps): Promise<string>;
+  abstract refreshToken(userId: string): Promise<string>;
 }
