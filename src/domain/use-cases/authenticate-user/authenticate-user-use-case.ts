@@ -1,6 +1,12 @@
 import { type User } from "@domain/entities/user/user";
 import { type SecurityProvider } from "@domain/providers/security-provider";
+import {
+  type RefreshTokenRepository,
+  type RefreshTokenProps,
+} from "@domain/repositories/refresh-token-repository";
 import { type UserRepository } from "@domain/repositories/user-repository";
+import { GenerateJwtToken } from "@domain/utils/jwt-token/generate-jwt-token";
+import { GenerateRefreshToken } from "@domain/utils/refresh-token/generate-refresh-jwt-token";
 
 import { InvalidEmailOrPasswordError } from "./errors/invalid-email-or-password-error";
 
@@ -12,12 +18,14 @@ interface AuthenticateUserRequest {
 interface AuthenticateUserResponse {
   user: User;
   token: string;
+  refreshToken: RefreshTokenProps;
 }
 
 export class AuthenticateUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly securityProvider: SecurityProvider
+    private readonly securityProvider: SecurityProvider,
+    private readonly refreshTokenRepository: RefreshTokenRepository
   ) {}
 
   async execute({
@@ -34,12 +42,19 @@ export class AuthenticateUserUseCase {
     if (userOrNull === null || !isPasswordSameSaveInDatabase)
       throw new InvalidEmailOrPasswordError();
 
-    const token = this.securityProvider.sign({
-      payload: { id: userOrNull.id },
-      secretOrPrivateKey: String(process.env.JWT_SECRET),
-      expiresIn: "20s",
+    const token = new GenerateJwtToken(this.securityProvider).execute({
+      payload: userOrNull.id,
     });
 
-    return { user: userOrNull, token };
+    await this.refreshTokenRepository.delete(userOrNull.id);
+
+    const { refreshToken } = await new GenerateRefreshToken(
+      this.refreshTokenRepository,
+      this.userRepository
+    ).execute({
+      userId: userOrNull.id,
+    });
+
+    return { user: userOrNull, token, refreshToken };
   }
 }
