@@ -6,6 +6,12 @@ import {
 export class InMemoryRefreshTokenDatabase implements RefreshTokenRepository {
   public refreshTokens: RefreshTokenProps[] = [];
 
+  async exists(userId: string): Promise<boolean> {
+    return this.refreshTokens.some(
+      (refreshToken) => refreshToken.userId === userId
+    );
+  }
+
   async create(refreshToken: RefreshTokenProps): Promise<RefreshTokenProps> {
     this.refreshTokens.push(refreshToken);
 
