@@ -6,9 +6,23 @@ import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 export function registerUserControllerEndToEndTests(): void {
   describe("Register user controller", () => {
+    let registeredUserRequestResponse: {
+      user: {
+        id: string;
+        name: string;
+        job: string;
+        email: string;
+        read_time: number;
+        created_at: Date;
+        updated_at: Date;
+      };
+    };
+
     it("should be able register new user", async () => {
       await new MakeUserFactory().toHttp({}).then(async (response) => {
         const responseBody = await response.json();
+
+        registeredUserRequestResponse = responseBody;
 
         deepStrictEqual(response.status, 201);
         deepStrictEqual(responseBody, {
@@ -26,18 +40,22 @@ export function registerUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to register new user with existing email", async () => {
-      await new MakeUserFactory().toHttp({});
+      await new MakeUserFactory()
+        .toHttp({
+          override: {
+            email: registeredUserRequestResponse.user.email,
+          },
+        })
+        .then(async (response) => {
+          const responseBody = await response.json();
 
-      await new MakeUserFactory().toHttp({}).then(async (response) => {
-        const responseBody = await response.json();
-
-        deepStrictEqual(response.status, 400);
-        deepStrictEqual(responseBody, {
-          statusCode: 400,
-          message: "The user already exists",
-          error: "Bad request",
+          deepStrictEqual(response.status, 400);
+          deepStrictEqual(responseBody, {
+            statusCode: 400,
+            message: "The user already exists",
+            error: "Bad request",
+          });
         });
-      });
     });
 
     it("should not be able to register new user without properties of request body", async () => {
@@ -51,12 +69,38 @@ export function registerUserControllerEndToEndTests(): void {
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 500);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 500,
+          statusCode: 400,
           message:
             "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able to register new user if properties of request body not same as name, job, email and password", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/register`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          fakeName: "zzzzz",
+          fakeJob: "xxxxx",
+          fakeEmail: "lllllll",
+          fakePassword: "nnnnnn",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
         });
       });
     });
@@ -72,12 +116,12 @@ export function registerUserControllerEndToEndTests(): void {
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 500);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 500,
+          statusCode: 400,
           message:
             "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
+          error: "Bad request",
         });
       });
     });
@@ -93,12 +137,12 @@ export function registerUserControllerEndToEndTests(): void {
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 500);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 500,
+          statusCode: 400,
           message:
             "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
+          error: "Bad request",
         });
       });
     });
@@ -114,12 +158,12 @@ export function registerUserControllerEndToEndTests(): void {
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 500);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 500,
+          statusCode: 400,
           message:
             "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
+          error: "Bad request",
         });
       });
     });
@@ -135,12 +179,12 @@ export function registerUserControllerEndToEndTests(): void {
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 500);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 500,
+          statusCode: 400,
           message:
             "The properties: name, job, email and password, should be provided in the request body",
-          error: "Internal Server Error",
+          error: "Bad request",
         });
       });
     });
