@@ -1,36 +1,50 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
-import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 export function updateUserControllerEndToEndTests(): void {
   describe("Update user controller", () => {
-    it("should be able update all data from user", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-all-data-from-user-test@example.com",
-        },
-      });
+    let login: {
+      user: {
+        id: string;
+        name: string;
+        job: string;
+        email: string;
+        read_time: number;
+        created_at: Date;
+        updated_at: Date;
+      };
+      token: string;
+      refreshToken: {
+        id: string;
+        expiresIn: number;
+        userId: string;
+        createdAt: Date;
+      };
+    };
 
-      const authenticateUserResponse = await (
+    before(async () => {
+      login = await (
         await MakeRequestLoginFactory.execute({
           data: {
-            email: "update-all-data-from-user-test@example.com",
+            email: "joe3@example.com",
             password: "1234567890",
           },
         })
       ).json();
+    });
 
+    it("should be able update all data from user", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
           name: "Frank Wells",
@@ -40,6 +54,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
       }).then(async (response) => {
         const responseBody = await response.json();
+
+        login.user = responseBody.user;
 
         deepStrictEqual(response.status, 201);
         deepStrictEqual(responseBody, {
@@ -57,47 +73,32 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should be able update just name from user", async () => {
-      const registeredUserResponseBody = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "update-just-name-from-user-test@example.com",
-          },
-        })
-      ).json();
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-just-name-from-user-test@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          ...registeredUserResponseBody.user,
-          name: "Frank Wells",
-          password: "12345678900102030405",
+          ...login.user,
+          name: "James Wilson",
+          password: "1234567890",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
+
+        login.user = responseBody.user;
 
         deepStrictEqual(response.status, 201);
         deepStrictEqual(responseBody, {
           user: {
             id: responseBody.user.id,
-            name: "Frank Wells",
-            job: "doctor",
-            email: "update-just-name-from-user-test@example.com",
+            name: "James Wilson",
+            job: "development",
+            email: "frank@example.com",
             read_time: 0,
             created_at: responseBody.user.created_at,
             updated_at: responseBody.user.updated_at,
@@ -107,47 +108,32 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should be able update just job from user", async () => {
-      const registeredUserResponseBody = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "update-just-job-from-user-test@example.com",
-          },
-        })
-      ).json();
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-just-job-from-user-test@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          ...registeredUserResponseBody.user,
+          ...login.user,
           job: "Driver",
-          password: "12345678900102030405",
+          password: "1234567890",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
+
+        login.user = responseBody.user;
 
         deepStrictEqual(response.status, 201);
         deepStrictEqual(responseBody, {
           user: {
             id: responseBody.user.id,
-            name: "John Doe",
+            name: "James Wilson",
             job: "driver",
-            email: "update-just-job-from-user-test@example.com",
+            email: "frank@example.com",
             read_time: 0,
             created_at: responseBody.user.created_at,
             updated_at: responseBody.user.updated_at,
@@ -157,47 +143,32 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should be able update just email from user", async () => {
-      const registeredUserResponseBody = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "update-just-email-from-user-test@example.com",
-          },
-        })
-      ).json();
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-just-email-from-user-test@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          ...registeredUserResponseBody.user,
-          email: "updated-email-test@example.com",
-          password: "12345678900102030405",
+          ...login.user,
+          email: "updated-email@example.com",
+          password: "1234567890",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
+
+        login.user = responseBody.user;
 
         deepStrictEqual(response.status, 201);
         deepStrictEqual(responseBody, {
           user: {
             id: responseBody.user.id,
-            name: "John Doe",
-            job: "doctor",
-            email: "updated-email-test@example.com",
+            name: "James Wilson",
+            job: "driver",
+            email: "updated-email@example.com",
             read_time: 0,
             created_at: responseBody.user.created_at,
             updated_at: responseBody.user.updated_at,
@@ -207,34 +178,17 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should be able update just password from user", async () => {
-      const registeredUserResponseBody = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "update-just-password-from-user-test@example.com",
-          },
-        })
-      ).json();
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-just-password-from-user-test@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          ...registeredUserResponseBody.user,
+          ...login.user,
           password: "12345678900102030405",
         },
       }).then(async (response) => {
@@ -244,9 +198,9 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           user: {
             id: responseBody.user.id,
-            name: "John Doe",
-            job: "doctor",
-            email: "update-just-password-from-user-test@example.com",
+            name: "James Wilson",
+            job: "driver",
+            email: "updated-email@example.com",
             read_time: 0,
             created_at: responseBody.user.created_at,
             updated_at: responseBody.user.updated_at,
@@ -256,35 +210,19 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with existing email", async () => {
-      const registeredUserResponseBody = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "update-user-with-existing-email-test@example.com",
-          },
-        })
-      ).json();
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-with-existing-email-test@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          ...registeredUserResponseBody.user,
-          email: "frank@example.com",
+          ...login.user,
+          email: "joe4@example.com",
+          password: "12345678900102030405",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -306,9 +244,7 @@ export function updateUserControllerEndToEndTests(): void {
           "Content-Type": "application/json",
         },
         data: {
-          name: "Frank Wells",
-          job: "dev",
-          email: "frank@example.com",
+          ...login.user,
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -323,22 +259,172 @@ export function updateUserControllerEndToEndTests(): void {
       });
     });
 
-    it("should not be able update user that non exists", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test7@example.com",
+    it("should not be able update all data from user without request body properties", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
         },
+        data: {},
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
       });
+    });
 
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test7@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
+    it("should not be able to update the user if the request body properties are not the same as name, job, email and password", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          fakeName: "zzzzz",
+          fakeJob: "xxxxx",
+          fakeEmail: "lllllll",
+          fakePassword: "nnnnnn",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
 
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update just name from user without name property", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          job: "development",
+          email: "frank@example.com",
+          password: "1234567890",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update just job from user without property job", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          name: "James Wilson",
+          email: "frank@example.com",
+          password: "1234567890",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update just email from user without email property", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          name: "James Wilson",
+          job: "driver",
+          password: "1234567890",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update just password from user without property password", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          name: "James Wilson",
+          job: "driver",
+          email: "updated-email@example.com",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email and password, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update user that non exists", async () => {
       await MakeRequestFactory.execute({
         url: `${String(
           process.env.TEST_SERVER_URL
@@ -346,12 +432,10 @@ export function updateUserControllerEndToEndTests(): void {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank Wells",
-          job: "doctor",
-          email: "igor@example.com",
+          ...login.user,
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -367,34 +451,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able update user with field name empty", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test8@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test8@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
+          ...login.user,
           name: "",
-          job: "doctor",
-          email: "robertt@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -410,34 +478,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field name more than 255 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test9@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test9@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
+          ...login.user,
           name: "Frank".repeat(260),
-          job: "doctor",
-          email: "bobb@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -453,34 +505,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field name less than 5 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test10@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test10@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
+          ...login.user,
           name: "Fran",
-          job: "doctor",
-          email: "franciss@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -496,34 +532,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field job empty", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test11@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test11@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
+          ...login.user,
           job: "",
-          email: "normamm@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -539,34 +559,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field job more than 255 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test12@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test12@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
+          ...login.user,
           job: "doctor".repeat(260),
-          email: "josephh@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -582,34 +586,18 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field job less than 5 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test13@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test13@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
+          ...login.user,
           job: "doc",
-          email: "samm@example.com",
           password: "1234567890",
         },
       }).then(async (response) => {
@@ -625,33 +613,17 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field invalid email", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test14@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test14@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
+          ...login.user,
           email: "@example.com",
           password: "1234567890",
         },
@@ -670,33 +642,17 @@ export function updateUserControllerEndToEndTests(): void {
     it("should not be able to update user with field email more than 255 characters", async () => {
       const domain = "c".repeat(260);
 
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test15@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test15@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
+          ...login.user,
           email: `gregg@${domain}.com`,
           password: "1234567890",
         },
@@ -713,34 +669,17 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field password empty", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test16@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test16@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
-          email: `harryy@example.com`,
+          ...login.user,
           password: "",
         },
       }).then(async (response) => {
@@ -756,34 +695,17 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field password more than 255 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test17@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test17@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
-          email: `georgee@example.com`,
+          ...login.user,
           password: "1".repeat(260),
         },
       }).then(async (response) => {
@@ -799,34 +721,17 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with field password less than 10 characters", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "update-user-test18@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "update-user-test18@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
-          name: "Frank",
-          job: "doctor",
-          email: `markk@example.com`,
+          ...login.user,
           password: "12345",
         },
       }).then(async (response) => {
