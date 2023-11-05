@@ -1,23 +1,37 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
-import { MakeUserFactory } from "@test/factories/make-user-factory";
+import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
 
 export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
   describe("Ensure authenticate middleware", () => {
-    it("should not be able execute feature without are authenticate and with token empty", async () => {
-      const registerUserResponse = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "test-auth-1@example.com",
+    let login: {
+      user: { id: string };
+      token: string;
+      refreshToken: {
+        id: string;
+        expiresIn: number;
+        userId: string;
+        createdAt: Date;
+      };
+    };
+
+    before(async () => {
+      login = await (
+        await MakeRequestLoginFactory.execute({
+          data: {
+            email: "joe4@example.com",
+            password: "1234567890",
           },
         })
       ).json();
+    });
 
+    it("should not be able execute feature without are authenticate and with token empty", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
-          registerUserResponse.user.id
+          login.user.id
         )}`,
         method: "DELETE",
         headers: {
@@ -36,17 +50,9 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
     });
 
     it("should not be able execute feature without are authenticate and with token without two parts", async () => {
-      const registerUserResponse = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "test-auth-2@example.com",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
-          registerUserResponse.user.id
+          login.user.id
         )}`,
         method: "DELETE",
         headers: {
@@ -66,22 +72,14 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
     });
 
     it("should not be able execute feature without are authenticate and if token not start with Bearer word", async () => {
-      const registerUserResponse = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "test-ensure-authenticate3@example.com",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
-          registerUserResponse.user.id
+          login.user.id
         )}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer-fake ${String(registerUserResponse.user.id)}`,
+          authorization: `Bearer-fake ${String(login.user.id)}`,
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -96,17 +94,9 @@ export function ensureAuthenticatedMiddlewareEndToEndTests(): void {
     });
 
     it("should not be able execute feature without are authenticate and with token invalid", async () => {
-      const registerUserResponse = await (
-        await new MakeUserFactory().toHttp({
-          override: {
-            email: "test-auth4@example.com",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
-          registerUserResponse.user.id
+          login.user.id
         )}`,
         method: "DELETE",
         headers: {
