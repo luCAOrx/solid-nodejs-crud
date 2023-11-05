@@ -79,6 +79,21 @@ export class UpdateUserController {
             error: "Bad request",
           });
         }
+
+        if (
+          Object.keys(request.body).length === 0 ||
+          !Object.hasOwn(request.body, "name") ||
+          !Object.hasOwn(request.body, "job") ||
+          !Object.hasOwn(request.body, "email") ||
+          !Object.hasOwn(request.body, "password")
+        ) {
+          return response.status(400).json({
+            statusCode: 400,
+            message:
+              "The properties: name, job, email and password, should be provided in the request body",
+            error: "Bad request",
+          });
+        }
       });
   }
 }
