@@ -1,36 +1,33 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
-import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 export function getUserControllerEndToEndTests(): void {
   describe("Get user controller", () => {
-    it("should be able get user", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "get-user-test1@example.com",
-        },
-      });
+    let login: { user: { id: string }; token: string };
 
-      const authenticateUserResponse = await (
+    before(async () => {
+      login = await (
         await MakeRequestLoginFactory.execute({
           data: {
-            email: "get-user-test1@example.com",
+            email: "joe1@example.com",
             password: "1234567890",
           },
         })
       ).json();
+    });
 
+    it("should be able get user", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -40,7 +37,7 @@ export function getUserControllerEndToEndTests(): void {
           id: responseBody.id,
           name: "John Doe",
           job: "doctor",
-          email: "get-user-test1@example.com",
+          email: "joe1@example.com",
           read_time: 1,
           created_at: responseBody.created_at,
           updated_at: responseBody.updated_at,
@@ -68,29 +65,14 @@ export function getUserControllerEndToEndTests(): void {
     });
 
     it("should be able to count how many times the user has been read", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "get-user-test2@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "get-user-test2@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -100,8 +82,8 @@ export function getUserControllerEndToEndTests(): void {
           id: responseBody.id,
           name: "John Doe",
           job: "doctor",
-          email: "get-user-test2@example.com",
-          read_time: 1,
+          email: "joe1@example.com",
+          read_time: 2,
           created_at: responseBody.created_at,
           updated_at: responseBody.updated_at,
         });
@@ -109,12 +91,12 @@ export function getUserControllerEndToEndTests(): void {
 
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -124,8 +106,8 @@ export function getUserControllerEndToEndTests(): void {
           id: responseBody.id,
           name: "John Doe",
           job: "doctor",
-          email: "get-user-test2@example.com",
-          read_time: 2,
+          email: "joe1@example.com",
+          read_time: 3,
           created_at: responseBody.created_at,
           updated_at: responseBody.updated_at,
         });
@@ -133,26 +115,12 @@ export function getUserControllerEndToEndTests(): void {
     });
 
     it("should not be able get user if user not exists", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "get-user-test3@example.com",
-        },
-      });
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "get-user-test1@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/get-user/12345`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
       }).then(async (response) => {
         const responseBody = await response.json();
