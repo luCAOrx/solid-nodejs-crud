@@ -17,7 +17,7 @@ export class DeleteUserController {
 
     await deleteUserUseCase
       .execute({ id })
-      .then(() => response.status(200).json({}))
+      .then(() => response.status(204).end())
       .catch((error: Error) => {
         if (error instanceof UserNotFoundError) {
           return response.status(400).json({
