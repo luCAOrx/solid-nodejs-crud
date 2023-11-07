@@ -49,13 +49,15 @@ export class GetUsersController {
         if (
           Object.keys(request.query).length === 0 ||
           Object.hasOwn(request.query, "page") ||
-          Object.hasOwn(request.query, "takePage")
+          Object.hasOwn(request.query, "takePage") ||
+          !Object.hasOwn(request.query, "page") ||
+          !Object.hasOwn(request.query, "takePage")
         ) {
-          return response.status(500).json({
-            statusCode: 500,
+          return response.status(400).json({
+            statusCode: 400,
             message:
               "The query parameters: page and takePage, must be provided in the query parameters of the request",
-            error: "Internal Server Error",
+            error: "Bad request",
           });
         }
       });
