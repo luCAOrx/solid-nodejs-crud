@@ -1,42 +1,39 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 import { MakeRequestLoginFactory } from "@test/factories/make-request-login-factory";
-import { MakeUserFactory } from "@test/factories/make-user-factory";
 
 export function deleteUserControllerEndToEndTests(): void {
   describe("Delete user controller", () => {
-    it("should be able delete user", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "delete-user-test1@example.com",
-        },
-      });
+    let login: { user: { id: string }; token: string };
 
-      const authenticateUserResponse = await (
+    before(async () => {
+      login = await (
         await MakeRequestLoginFactory.execute({
           data: {
-            email: "delete-user-test1@example.com",
+            email: "joe0@example.com",
             password: "1234567890",
           },
         })
       ).json();
+    });
 
+    it("should be able delete user", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/${String(
-          authenticateUserResponse.user.id
+          login.user.id
         )}`,
         method: "DELETE",
         headers: {
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {},
       }).then(async (response) => {
-        const responseBody = await response.json();
+        const responseBody = response.body;
 
-        deepStrictEqual(response.status, 200);
-        deepStrictEqual(responseBody, {});
+        deepStrictEqual(response.status, 204);
+        deepStrictEqual(responseBody, null);
       });
     });
 
@@ -59,26 +56,11 @@ export function deleteUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to delete non-existent user", async () => {
-      await new MakeUserFactory().toHttp({
-        override: {
-          email: "delete-user-test2@example.com",
-        },
-      });
-
-      const authenticateUserResponse = await (
-        await MakeRequestLoginFactory.execute({
-          data: {
-            email: "delete-user-test2@example.com",
-            password: "1234567890",
-          },
-        })
-      ).json();
-
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/delete-user/fake-id`,
         method: "DELETE",
         headers: {
-          authorization: `Bearer ${String(authenticateUserResponse.token)}`,
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {},
       }).then(async (response) => {
