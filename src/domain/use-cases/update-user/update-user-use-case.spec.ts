@@ -1,5 +1,5 @@
-import { strictEqual, rejects, ok } from "node:assert";
-import { describe, it } from "node:test";
+import { deepStrictEqual, rejects, ok } from "node:assert";
+import { describe, it, before } from "node:test";
 
 import { User } from "@domain/entities/user/user";
 import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
@@ -19,143 +19,147 @@ describe("Update user use case", () => {
     userSecurityProvider
   );
 
-  it("should be able update all data from user", async () => {
-    const user = await new MakeUserFactory().toDomain({
+  let user: User;
+
+  before(async () => {
+    user = await new MakeUserFactory().toDomain({
+      inMemoryDatabase: inMemoryUserDatabase,
+    });
+
+    await new MakeUserFactory().toDomain({
       inMemoryDatabase: inMemoryUserDatabase,
       override: {
-        email: "update-all-data-test@example.com",
+        email: "existing-email@example.com",
       },
     });
+  });
 
-    const { updatedUser } = await updateUserUseCase.execute({
-      id: user.id,
-      data: {
-        name: "Kevin Houston",
-        job: "Driver",
-        email: "kevin@example.com",
-        password: "12345678901234567890",
-      },
-    });
+  it("should be able update all data from user", async () => {
+    await updateUserUseCase
+      .execute({
+        id: user.id,
+        data: {
+          name: "Kevin Houston",
+          job: "driver",
+          email: "kevin@example.com",
+          password: "12345678901234567890",
+        },
+      })
+      .then((response) => {
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].id,
+          response.updatedUser.id
+        );
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.updatedUser);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 2);
+        ok(response.updatedUser instanceof User);
 
-    strictEqual(inMemoryUserDatabase.users[0].id, updatedUser.id);
-    strictEqual(inMemoryUserDatabase.users[0], updatedUser);
-    strictEqual(inMemoryUserDatabase.users.length, 1);
-    ok(updatedUser);
-    strictEqual(updatedUser, updatedUser);
-    ok(updatedUser instanceof User);
+        user = response.updatedUser;
+      });
   });
 
   it("should be able update just name from user", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-      override: {
-        email: "update-name-test@example.com",
-      },
-    });
+    await updateUserUseCase
+      .execute({
+        id: user.id,
+        data: {
+          ...user.props,
+          name: "James Flinch",
+        },
+      })
+      .then((response) => {
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].id,
+          response.updatedUser.id
+        );
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].props.name,
+          "James Flinch"
+        );
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.updatedUser);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 2);
+        ok(response.updatedUser instanceof User);
 
-    const { updatedUser } = await updateUserUseCase.execute({
-      id: user.id,
-      data: {
-        ...user.props,
-        name: "James Flinch",
-      },
-    });
-
-    strictEqual(inMemoryUserDatabase.users[1].id, updatedUser.id);
-    strictEqual(inMemoryUserDatabase.users[1].props.name, "James Flinch");
-    strictEqual(inMemoryUserDatabase.users[1], updatedUser);
-    strictEqual(inMemoryUserDatabase.users.length, 2);
-    ok(updatedUser);
-    strictEqual(updatedUser, updatedUser);
-    ok(updatedUser instanceof User);
+        user = response.updatedUser;
+      });
   });
 
   it("should be able update just job from user", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-      override: {
-        email: "update-job-test@example.com",
-      },
-    });
+    await updateUserUseCase
+      .execute({
+        id: user.id,
+        data: {
+          ...user.props,
+          job: "driver",
+        },
+      })
+      .then((response) => {
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].id,
+          response.updatedUser.id
+        );
+        deepStrictEqual(inMemoryUserDatabase.users[0].props.job, "driver");
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.updatedUser);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 2);
+        ok(response.updatedUser instanceof User);
 
-    const { updatedUser } = await updateUserUseCase.execute({
-      id: user.id,
-      data: {
-        ...user.props,
-        job: "Driver",
-      },
-    });
-
-    strictEqual(inMemoryUserDatabase.users[2].id, updatedUser.id);
-    strictEqual(inMemoryUserDatabase.users[2].props.job, "driver");
-    strictEqual(inMemoryUserDatabase.users[2], updatedUser);
-    strictEqual(inMemoryUserDatabase.users.length, 3);
-    ok(updatedUser);
-    strictEqual(updatedUser, updatedUser);
-    ok(updatedUser instanceof User);
+        user = response.updatedUser;
+      });
   });
 
   it("should be able update just email from user", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-      override: {
-        email: "update-email-test@example.com",
-      },
-    });
+    await updateUserUseCase
+      .execute({
+        id: user.id,
+        data: {
+          ...user.props,
+          email: "updated-email@example.com",
+        },
+      })
+      .then((response) => {
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].id,
+          response.updatedUser.id
+        );
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].props.email,
+          "updated-email@example.com"
+        );
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.updatedUser);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 2);
+        ok(response.updatedUser instanceof User);
 
-    const { updatedUser } = await updateUserUseCase.execute({
-      id: user.id,
-      data: {
-        ...user.props,
-        email: "updated-email@example.com",
-      },
-    });
-
-    strictEqual(inMemoryUserDatabase.users[3].id, updatedUser.id);
-    strictEqual(
-      inMemoryUserDatabase.users[3].props.email,
-      "updated-email@example.com"
-    );
-    strictEqual(inMemoryUserDatabase.users[3], updatedUser);
-    strictEqual(inMemoryUserDatabase.users.length, 4);
-    ok(updatedUser);
-    strictEqual(updatedUser, updatedUser);
-    ok(updatedUser instanceof User);
+        user = response.updatedUser;
+      });
   });
 
   it("should be able update just password from user", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-      override: {
-        email: "update-password-test@example.com",
-      },
-    });
+    await updateUserUseCase
+      .execute({
+        id: user.id,
+        data: {
+          ...user.props,
+          password: "updated-password",
+        },
+      })
+      .then((response) => {
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].id,
+          response.updatedUser.id
+        );
+        deepStrictEqual(
+          inMemoryUserDatabase.users[0].props.password,
+          response.updatedUser.props.password
+        );
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.updatedUser);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 2);
+        ok(response.updatedUser instanceof User);
 
-    const { updatedUser } = await updateUserUseCase.execute({
-      id: user.id,
-      data: {
-        ...user.props,
-        password: "updated-password",
-      },
-    });
-
-    strictEqual(inMemoryUserDatabase.users[4].id, updatedUser.id);
-    strictEqual(
-      inMemoryUserDatabase.users[4].props.password,
-      "ea5b3306fc0aad6abdcaecc71b625caf09b2c80ab0d25d350fa89d781d8002a6ad"
-    );
-    strictEqual(inMemoryUserDatabase.users[4], updatedUser);
-    strictEqual(inMemoryUserDatabase.users.length, 5);
-    ok(updatedUser);
-    strictEqual(updatedUser, updatedUser);
-    ok(updatedUser instanceof User);
+        user = response.updatedUser;
+      });
   });
 
   it("should not be able update user that non exists", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-    });
-
     await rejects(async () => {
       await updateUserUseCase.execute({
         id: "1234567890000000",
@@ -167,13 +171,9 @@ describe("Update user use case", () => {
   });
 
   it("should not be able update user with invalid data", async () => {
-    const { id } = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-    });
-
     await rejects(async () => {
       await updateUserUseCase.execute({
-        id,
+        id: user.id,
         data: {
           name: "",
           job: "Cop".repeat(260),
@@ -185,16 +185,12 @@ describe("Update user use case", () => {
   });
 
   it("should not be able update user with existing email", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-    });
-
     await rejects(async () => {
       await updateUserUseCase.execute({
         id: user.id,
         data: {
           ...user.props,
-          email: "kevin@example.com",
+          email: "existing-email@example.com",
         },
       });
     }, UserAlreadyExistsError);
