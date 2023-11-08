@@ -14,8 +14,8 @@ interface RefreshJwtTokenRequest {
 }
 
 interface RefreshJwtTokenResponse {
-  refreshToken: RefreshTokenProps;
-  tokenJwt: string;
+  refreshToken?: RefreshTokenProps;
+  token: string;
 }
 
 export class RefreshJwtTokenUseCase {
@@ -34,24 +34,25 @@ export class RefreshJwtTokenUseCase {
 
     if (refreshTokenFound === null) throw new RefreshTokenNotFoundError();
 
-    const sixteenSecondsInUnixTimestamp = new Date().getTime() / 1000 + 16;
+    const dateFromTimestamp = new Date(refreshTokenFound.expiresIn * 1000);
+    const currentDate = new Date();
+    const refreshTokenHasExpired = currentDate > dateFromTimestamp;
 
-    const refreshTokenHasExpired =
-      sixteenSecondsInUnixTimestamp > refreshTokenFound.expiresIn;
+    const token = new GenerateJwtToken(this.securityProvider).execute({
+      payload: { id: refreshTokenFound.userId },
+    });
 
     if (refreshTokenHasExpired) {
       await this.refreshTokenRepository.delete(refreshTokenFound.userId);
+
+      const { refreshToken } = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+        this.userRepository
+      ).execute({ userId: refreshTokenFound.userId });
+
+      return { refreshToken, token };
     }
 
-    const { refreshToken } = await new GenerateRefreshToken(
-      this.refreshTokenRepository,
-      this.userRepository
-    ).execute({ userId: refreshTokenFound.userId });
-
-    const tokenJwt = new GenerateJwtToken(this.securityProvider).execute({
-      payload: refreshTokenFound.userId,
-    });
-
-    return { refreshToken, tokenJwt };
+    return { token };
   }
 }
