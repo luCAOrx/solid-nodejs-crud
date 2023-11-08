@@ -17,22 +17,29 @@ describe("Generate refresh jwt token", () => {
   );
 
   it("should be able create a refresh token", async () => {
-    const { id } = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-    });
-
-    const { refreshToken } = await generateRefreshJwtToken.execute({
-      userId: id,
-    });
-
-    deepStrictEqual(
-      inMemoryRefreshTokenDatabase.refreshTokens[0],
-      refreshToken
-    );
-    deepStrictEqual(inMemoryRefreshTokenDatabase.refreshTokens.length, 1);
+    await new MakeUserFactory()
+      .toDomain({
+        inMemoryDatabase: inMemoryUserDatabase,
+      })
+      .then(async (response) => {
+        await generateRefreshJwtToken
+          .execute({
+            userId: response.id,
+          })
+          .then(async (response) => {
+            deepStrictEqual(
+              inMemoryRefreshTokenDatabase.refreshTokens[0],
+              response.refreshToken
+            );
+            deepStrictEqual(
+              inMemoryRefreshTokenDatabase.refreshTokens.length,
+              1
+            );
+          });
+      });
   });
 
-  it("should not be able create a refresh token", async () => {
+  it("should not be able create a refresh token with inexistent user", async () => {
     await rejects(async () => {
       await generateRefreshJwtToken.execute({
         userId: "12345678901234567890",
