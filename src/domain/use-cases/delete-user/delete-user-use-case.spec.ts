@@ -1,39 +1,31 @@
-import { strictEqual, rejects } from "node:assert";
-import { describe, it } from "node:test";
+import { deepStrictEqual, rejects } from "node:assert";
+import { describe, it, before } from "node:test";
 
+import { type User } from "@domain/entities/user/user";
+import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
-import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
-import { RegisterUserUseCase } from "../register-user/register-user-use-case";
 import { DeleteUserUseCase } from "./delete-user-use-case";
 
 describe("Delete user use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
-  const userSecurityProvider = new UserSecurityProvider();
-  const registerUserUseCase = new RegisterUserUseCase(
-    inMemoryUserDatabase,
-    userSecurityProvider
-  );
   const deleteUserUseCase = new DeleteUserUseCase(inMemoryUserDatabase);
 
+  let user: User;
+
+  before(async () => {
+    user = await new MakeUserFactory().toDomain({
+      inMemoryDatabase: inMemoryUserDatabase,
+    });
+  });
+
   it("should be able delete user", async () => {
-    const {
-      user: { id },
-    } = await registerUserUseCase.execute({
-      name: "Paulo",
-      job: "Doctor",
-      email: "paulo@example.com",
-      password: "1234567890",
-    });
-
-    strictEqual(inMemoryUserDatabase.users.length, 1);
-
     await deleteUserUseCase.execute({
-      id,
+      id: user.id,
     });
 
-    strictEqual(inMemoryUserDatabase.users.length, 0);
+    deepStrictEqual(inMemoryUserDatabase.users.length, 0);
   });
 
   it("should not be able to delete non-existent user", async () => {
