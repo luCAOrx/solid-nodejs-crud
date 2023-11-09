@@ -16,15 +16,27 @@ datasource db {
 }
 
 model User {
-  id             String           @id
-  name           String
-  job            String
-  email          String           @unique
-  password       String
-  read_time      BigInt
-  role           Role
-  created_at     DateTime         @default(now())
-  updated_at     DateTime?
+  id           String         @id
+  name         String
+  job          String
+  email        String         @unique
+  password     String
+  read_time    BigInt
+  role         Role
+  created_at   DateTime       @default(now())
+  updated_at   DateTime?
+  RefreshToken RefreshToken[]
 
   @@map("user")
+}
+
+model RefreshToken {
+  id         String   @id
+  expires_in Int
+  user_id    String   @unique
+  created_at DateTime @default(now())
+
+  user User @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@map("refresh-token")
 }
