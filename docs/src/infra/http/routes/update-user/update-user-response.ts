@@ -71,21 +71,16 @@ const httpResponseToClientError: Response = {
             error: "Bad request",
           },
         },
-      },
-    },
-  },
-};
 
-const httpResponseToInternalServerError: Response = {
-  description:
-    "HTTP response to update user without properties of request body",
-  content: {
-    "application/json": {
-      example: {
-        statusCode: 500,
-        message:
-          "The properties: name, job, email and password, should be provided in the request body",
-        error: "Internal Server Error",
+        thePropertiesShouldBeProvidedInTheRequestBody: {
+          summary: "The properties should be provided in the request body",
+          value: {
+            statusCode: 400,
+            message:
+              "The properties: name, job, email and password, should be provided in the request body",
+            error: "Bad request",
+          },
+        },
       },
     },
   },
@@ -99,6 +94,4 @@ export const updateUserResponse: Responses = {
   401: httpResponseToUnauthorizedClient,
 
   404: httpResponseToPageNotFound,
-
-  500: httpResponseToInternalServerError,
 };
