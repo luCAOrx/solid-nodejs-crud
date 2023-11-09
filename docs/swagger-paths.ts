@@ -4,6 +4,7 @@ import { authenticateUserRequest } from "./src/infra/http/routes/authenticate-us
 import { deleteUserRequest } from "./src/infra/http/routes/delete-user/delete-user-request";
 import { getUserRequest } from "./src/infra/http/routes/get-user/get-user-request";
 import { getUsersRequest } from "./src/infra/http/routes/get-users/get-users-request";
+import { refreshTokenRequest } from "./src/infra/http/routes/refresh-token/refresh-token-request";
 import { registerUserRequest } from "./src/infra/http/routes/register-user/register-user-request";
 import { updateUserRequest } from "./src/infra/http/routes/update-user/update-user-request";
 
@@ -30,5 +31,9 @@ export const swaggerPaths: Paths = {
 
   "/users/delete-user/{id}": {
     delete: deleteUserRequest,
+  },
+
+  "/users/refresh-token": {
+    post: refreshTokenRequest,
   },
 };
