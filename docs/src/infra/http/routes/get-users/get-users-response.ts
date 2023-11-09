@@ -1,5 +1,7 @@
 import { type Response, type Responses } from "swagger-jsdoc";
 
+import { httpResponseToUnauthorizedClient } from "../global-responses/user-unauthorized-response";
+
 const httpResponseToSuccessRequest: Response = {
   description: "HTTP response to get users",
   content: {
@@ -79,21 +81,17 @@ const httpBadRequestResponse: Response = {
             error: "Bad request",
           },
         },
-      },
-    },
-  },
-};
 
-const httpResponseToInternalServerError: Response = {
-  description:
-    "HTTP response to list users without query params of the request",
-  content: {
-    "application/json": {
-      example: {
-        statusCode: 500,
-        message:
-          "The query parameters: page and takePage, must be provided in the query parameters of the request",
-        error: "Internal Server Error",
+        theQueryParametersShouldBeProvidedInTheRequestBody: {
+          summary:
+            "The query parameters should be provided in the query params",
+          value: {
+            statusCode: 400,
+            message:
+              "The query parameters: page and takePage, must be provided in the query parameters of the request",
+            error: "Bad request",
+          },
+        },
       },
     },
   },
@@ -104,5 +102,5 @@ export const getUsersResponse: Responses = {
 
   400: httpBadRequestResponse,
 
-  500: httpResponseToInternalServerError,
+  401: httpResponseToUnauthorizedClient,
 };
