@@ -8,13 +8,13 @@ const httpResponseToSuccessRequest: Response = {
   description: "HTTP response to delete user",
   content: {
     "application/json": {
-      example: {},
+      example: null,
     },
   },
 };
 
 export const deleteUserResponse: Responses = {
-  200: httpResponseToSuccessRequest,
+  204: httpResponseToSuccessRequest,
 
   400: userNotFoundResponse,
 
