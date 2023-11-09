@@ -34,19 +34,35 @@ export class AuthenticateUserUseCase {
   }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
     const userOrNull = await this.userRepository.findByEmail(email);
 
+    if (userOrNull === null) throw new InvalidEmailOrPasswordError();
+
     const isPasswordSameSaveInDatabase = await this.securityProvider.compare({
       password,
-      hash: String(userOrNull?.props.password),
+      hashedPassword: userOrNull.props.password,
     });
 
-    if (userOrNull === null || !isPasswordSameSaveInDatabase)
-      throw new InvalidEmailOrPasswordError();
+    if (!isPasswordSameSaveInDatabase) throw new InvalidEmailOrPasswordError();
+
+    const refreshTokenAlreadyExists = await this.refreshTokenRepository.exists(
+      userOrNull.id
+    );
 
     const token = new GenerateJwtToken(this.securityProvider).execute({
-      payload: userOrNull.id,
+      payload: { id: userOrNull.id },
     });
 
-    await this.refreshTokenRepository.delete(userOrNull.id);
+    if (refreshTokenAlreadyExists) {
+      await this.refreshTokenRepository.delete(userOrNull.id);
+
+      const { refreshToken } = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+        this.userRepository
+      ).execute({
+        userId: userOrNull.id,
+      });
+
+      return { user: userOrNull, token, refreshToken };
+    }
 
     const { refreshToken } = await new GenerateRefreshToken(
       this.refreshTokenRepository,
