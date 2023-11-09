@@ -1,6 +1,8 @@
-import { ok, rejects, strictEqual, notStrictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { ok, rejects, deepStrictEqual, notDeepStrictEqual } from "node:assert";
+import { describe, it, before } from "node:test";
 
+import { type User } from "@domain/entities/user/user";
+import { type RefreshTokenProps } from "@domain/repositories/refresh-token-repository";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryRefreshTokenDatabase } from "@test/in-memory-database/in-memory-refresh-token-database";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
@@ -19,54 +21,61 @@ describe("Authenticate user use case", () => {
     inMemoryRefreshTokenDatabase
   );
 
-  it("should be able authenticate", async () => {
-    const user = await new MakeUserFactory().toDomain({
+  let user: User;
+
+  let login: {
+    user: User;
+    token: string;
+    refreshToken: RefreshTokenProps;
+  };
+
+  before(async () => {
+    user = await new MakeUserFactory().toDomain({
       inMemoryDatabase: inMemoryUserDatabase,
     });
+  });
 
-    const authenticate = await authenticateUserUseCase.execute({
-      email: user.props.email,
-      password: user.props.password,
-    });
+  it("should be able authenticate", async () => {
+    await authenticateUserUseCase
+      .execute({
+        email: user.props.email,
+        password: "1234567890",
+      })
+      .then((response) => {
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.user);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 1);
+        ok(response);
+        deepStrictEqual(response.user, user);
+        deepStrictEqual(
+          inMemoryRefreshTokenDatabase.refreshTokens[0],
+          response.refreshToken
+        );
+        deepStrictEqual(inMemoryRefreshTokenDatabase.refreshTokens.length, 1);
 
-    strictEqual(inMemoryUserDatabase.users[0], authenticate.user);
-    strictEqual(inMemoryUserDatabase.users.length, 1);
-    ok(authenticate);
-    strictEqual(authenticate.user, user);
-    strictEqual(
-      inMemoryRefreshTokenDatabase.refreshTokens[0],
-      authenticate.refreshToken
-    );
-    strictEqual(inMemoryRefreshTokenDatabase.refreshTokens.length, 1);
+        login = response;
+      });
   });
 
   it("should be able to delete the user's existing refresh token when the user re-authenticates", async () => {
-    const user = await new MakeUserFactory().toDomain({
-      inMemoryDatabase: inMemoryUserDatabase,
-      override: {
-        email: "authenticate-user-test@example.com",
-      },
-    });
-
-    const { refreshToken } = await authenticateUserUseCase.execute({
-      email: user.props.email,
-      password: user.props.password,
-    });
-
-    const authenticate = await authenticateUserUseCase.execute({
-      email: user.props.email,
-      password: user.props.password,
-    });
-
-    strictEqual(inMemoryUserDatabase.users[1], authenticate.user);
-    strictEqual(inMemoryUserDatabase.users.length, 2);
-    strictEqual(authenticate.user, user);
-    notStrictEqual(inMemoryRefreshTokenDatabase.refreshTokens[0], refreshToken);
-    strictEqual(
-      inMemoryRefreshTokenDatabase.refreshTokens[0],
-      authenticate.refreshToken
-    );
-    strictEqual(inMemoryRefreshTokenDatabase.refreshTokens.length, 1);
+    await authenticateUserUseCase
+      .execute({
+        email: user.props.email,
+        password: "1234567890",
+      })
+      .then((response) => {
+        deepStrictEqual(inMemoryUserDatabase.users[0], response.user);
+        deepStrictEqual(inMemoryUserDatabase.users.length, 1);
+        deepStrictEqual(response.user, user);
+        deepStrictEqual(
+          inMemoryRefreshTokenDatabase.refreshTokens[0],
+          response.refreshToken
+        );
+        deepStrictEqual(inMemoryRefreshTokenDatabase.refreshTokens.length, 1);
+        notDeepStrictEqual(
+          inMemoryRefreshTokenDatabase.refreshTokens[0],
+          login.refreshToken
+        );
+      });
   });
 
   it("should not be able authenticate if provided email not equal that user email", async () => {
@@ -81,8 +90,8 @@ describe("Authenticate user use case", () => {
   it("should not be able authenticate if provided password not equal that user password", async () => {
     await rejects(async () => {
       await authenticateUserUseCase.execute({
-        email: "joe@example.com",
-        password: "12345678901",
+        email: user.props.email,
+        password: "123456789012312",
       });
     }, InvalidEmailOrPasswordError);
   });
