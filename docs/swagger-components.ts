@@ -105,5 +105,15 @@ export const swaggerComponents: Components = {
         },
       },
     },
+
+    RefreshTokenRequestBody: {
+      type: "object",
+      properties: {
+        refreshToken: {
+          type: "string",
+          format: "uuid",
+        },
+      },
+    },
   },
 };
