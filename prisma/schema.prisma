@@ -16,16 +16,18 @@ datasource db {
 }
 
 model User {
-  id           String         @id
-  name         String
-  job          String
-  email        String         @unique
-  password     String
-  read_time    BigInt
-  role         Role
-  created_at   DateTime       @default(now())
-  updated_at   DateTime?
-  RefreshToken RefreshToken[]
+  id                              String         @id
+  name                            String
+  job                             String
+  email                           String         @unique
+  password                        String
+  read_time                       BigInt
+  role                            Role
+  password_reset_token            String
+  password_reset_token_expiration DateTime
+  created_at                      DateTime       @default(now())
+  updated_at                      DateTime?
+  RefreshToken                    RefreshToken[]
 
   @@map("user")
 }
