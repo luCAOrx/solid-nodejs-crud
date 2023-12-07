@@ -8,6 +8,7 @@ import { type UserRepository } from "@domain/repositories/user-repository";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
+import { TheCurrentPasswordIsInvalidError } from "./erros/the-current-password-is-invalid-error";
 
 interface UpdateUserRequest {
   id: string;
@@ -15,7 +16,8 @@ interface UpdateUserRequest {
     name: string;
     job: string;
     email: string;
-    password: string;
+    currentPassword: string;
+    newPassword: string;
   };
 }
 
@@ -31,7 +33,7 @@ export class UpdateUserUseCase {
 
   async execute({
     id,
-    data: { name, job, email, password },
+    data: { name, job, email, currentPassword, newPassword },
   }: UpdateUserRequest): Promise<UpdateUserResponse> {
     const userFound = await this.userRepository.findById(id);
     const userAlreadyExists = await this.userRepository.exists(email);
@@ -41,10 +43,19 @@ export class UpdateUserUseCase {
     if (email !== userFound.props.email && userAlreadyExists)
       throw new UserAlreadyExistsError();
 
+    const isPasswordSameSaveInDatabase =
+      await this.userSecurityProvider.compare({
+        password: currentPassword,
+        hashedPassword: userFound.props.password,
+      });
+
+    if (!isPasswordSameSaveInDatabase)
+      throw new TheCurrentPasswordIsInvalidError();
+
     const nameOrError = Name.create(name);
     const jobOrError = Job.create(job);
     const emailOrError = Email.create(email);
-    const passwordOrError = Password.create(password);
+    const passwordOrError = Password.create(newPassword);
 
     const hashedPassword = await this.userSecurityProvider.hash({
       password: passwordOrError.value,
@@ -61,6 +72,8 @@ export class UpdateUserUseCase {
       },
       userFound.id,
       userFound.read_time,
+      userFound.password_reset_token,
+      userFound.password_reset_token_expiration,
       new Date()
     );
 
