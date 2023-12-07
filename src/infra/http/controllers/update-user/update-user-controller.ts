@@ -2,6 +2,7 @@ import { type Request, type Response } from "express";
 
 import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
 import { UserAlreadyExistsError } from "@domain/use-cases/register-user/errors/user-already-exists-error";
+import { TheCurrentPasswordIsInvalidError } from "@domain/use-cases/update-user/erros/the-current-password-is-invalid-error";
 import { UpdateUserUseCase } from "@domain/use-cases/update-user/update-user-use-case";
 import { EmailShouldBeLessThan255CharactersError } from "@domain/validations/email/errors/email-should-be-less-than-255-characters-error";
 import { EmailShouldBeValidEmailError } from "@domain/validations/email/errors/email-should-be-valid-email-error";
@@ -26,13 +27,14 @@ interface UpdateUserRequestBodyProps extends Request {
   name: string;
   job: string;
   email: string;
-  password: string;
+  currentPassword: string;
+  newPassword: string;
 }
 
 export class UpdateUserController {
   async handle(request: Request, response: Response): Promise<void> {
     const { id } = request.params as unknown as UpdateUserRouteParamsProps;
-    const { name, job, email, password } =
+    const { name, job, email, currentPassword, newPassword } =
       request.body as UpdateUserRequestBodyProps;
 
     const prismaUserRepository = new PrismaUserRepository();
@@ -49,7 +51,8 @@ export class UpdateUserController {
           name,
           job,
           email,
-          password,
+          currentPassword,
+          newPassword,
         },
       })
       .then(({ updatedUser }) => {
@@ -61,6 +64,7 @@ export class UpdateUserController {
         if (
           error instanceof UserNotFoundError ||
           error instanceof UserAlreadyExistsError ||
+          error instanceof TheCurrentPasswordIsInvalidError ||
           error instanceof NameShouldNotBeEmptyError ||
           error instanceof NameShouldBeLessThan255CharactersError ||
           error instanceof NameShouldBeThan5CharactersError ||
@@ -73,9 +77,14 @@ export class UpdateUserController {
           error instanceof PasswordShouldBeLessThan255CharactersError ||
           error instanceof PasswordShouldBeThan10CharactersError
         ) {
+          const message =
+            error.message === "The current password is invalid"
+              ? error.message
+              : error.message.replace("password", "newPassword");
+
           return response.status(400).json({
             statusCode: 400,
-            message: error.message,
+            message,
             error: "Bad request",
           });
         }
@@ -85,12 +94,13 @@ export class UpdateUserController {
           !Object.hasOwn(request.body, "name") ||
           !Object.hasOwn(request.body, "job") ||
           !Object.hasOwn(request.body, "email") ||
-          !Object.hasOwn(request.body, "password")
+          !Object.hasOwn(request.body, "currentPassword") ||
+          !Object.hasOwn(request.body, "newPassword")
         ) {
           return response.status(400).json({
             statusCode: 400,
             message:
-              "The properties: name, job, email and password, should be provided in the request body",
+              "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
             error: "Bad request",
           });
         }
