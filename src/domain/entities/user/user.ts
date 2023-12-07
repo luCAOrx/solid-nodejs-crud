@@ -14,6 +14,8 @@ export class User {
   private readonly _id: string;
   private _props: UserProps;
   private _read_time: number;
+  private _password_reset_token: string;
+  private _password_reset_token_expiration: Date;
   private _updated_at: Date;
   private readonly _created_at: Date;
 
@@ -41,6 +43,22 @@ export class User {
     this._read_time = value;
   }
 
+  public get password_reset_token(): string {
+    return this._password_reset_token;
+  }
+
+  public set password_reset_token(value: string) {
+    this._password_reset_token = value;
+  }
+
+  public get password_reset_token_expiration(): Date {
+    return this._password_reset_token_expiration;
+  }
+
+  public set password_reset_token_expiration(value: Date) {
+    this._password_reset_token_expiration = value;
+  }
+
   public get updated_at(): Date {
     return this._updated_at;
   }
@@ -53,11 +71,16 @@ export class User {
     props: UserProps,
     id?: string,
     read_time?: number,
+    password_reset_token?: string,
+    password_reset_token_expiration?: Date,
     updated_at?: Date
   ) {
     this._id = id ?? randomUUID();
     this._props = props;
     this._read_time = read_time ?? 0;
+    this._password_reset_token = password_reset_token ?? "";
+    this._password_reset_token_expiration =
+      password_reset_token_expiration ?? new Date();
     this._updated_at = updated_at ?? new Date();
     this._created_at = new Date();
   }
@@ -66,8 +89,17 @@ export class User {
     props: UserProps,
     id?: string,
     read_time?: number,
+    password_reset_token?: string,
+    password_reset_token_expiration?: Date,
     updated_at?: Date
   ): User {
-    return new User(props, id, read_time, updated_at);
+    return new User(
+      props,
+      id,
+      read_time,
+      password_reset_token,
+      password_reset_token_expiration,
+      updated_at
+    );
   }
 }
