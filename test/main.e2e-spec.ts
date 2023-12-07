@@ -4,6 +4,7 @@ import { PrismaTestEnvironment } from "prisma/prismaTestEnvironment";
 import { app } from "@infra/http/app";
 import { authenticateUserControllerEndToEndTests } from "@infra/http/controllers/authenticate-user/authenticate-user-controller.e2e-spec";
 import { deleteUserControllerEndToEndTests } from "@infra/http/controllers/delete-user/delete-user-controller.e2e-spec";
+import { forgotPasswordControllerEndToEndTests } from "@infra/http/controllers/forgot-password/forgot-password-controller.e2e-spec";
 import { getUserControllerEndToEndTests } from "@infra/http/controllers/get-user/get-user-controller.e2e-spec";
 import { getUsersControllerEndToEndTests } from "@infra/http/controllers/get-users/get-users-controller.e2e-spec";
 import { refreshJwtTokenControllerEndToEndTests } from "@infra/http/controllers/refresh-jwt-token/refresh-jwt-token-controller.e2e-spec";
@@ -53,6 +54,7 @@ describe("End to end (E2E) tests", () => {
   pageNotFoundErrorEndToEndTests();
   ensureAuthenticatedMiddlewareEndToEndTests();
   refreshJwtTokenControllerEndToEndTests();
+  forgotPasswordControllerEndToEndTests();
 
   after(async () => {
     server.close();
