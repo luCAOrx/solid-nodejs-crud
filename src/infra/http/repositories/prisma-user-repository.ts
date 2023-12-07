@@ -22,6 +22,8 @@ export class PrismaUserRepository implements UserRepository {
       password,
       role,
       read_time,
+      password_reset_token,
+      password_reset_token_expiration,
       created_at,
       updated_at,
     } = UserMapper.toPersistence(user);
@@ -35,6 +37,8 @@ export class PrismaUserRepository implements UserRepository {
         password,
         role,
         read_time,
+        password_reset_token,
+        password_reset_token_expiration,
         created_at,
         updated_at,
       },
