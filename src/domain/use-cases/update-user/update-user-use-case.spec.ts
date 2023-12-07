@@ -9,6 +9,7 @@ import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
+import { TheCurrentPasswordIsInvalidError } from "./erros/the-current-password-is-invalid-error";
 import { UpdateUserUseCase } from "./update-user-use-case";
 
 describe("Update user use case", () => {
@@ -42,7 +43,8 @@ describe("Update user use case", () => {
           name: "Kevin Houston",
           job: "driver",
           email: "kevin@example.com",
-          password: "12345678901234567890",
+          currentPassword: "1234567890",
+          newPassword: "updatedPassword",
         },
       })
       .then((response) => {
@@ -65,6 +67,8 @@ describe("Update user use case", () => {
         data: {
           ...user.props,
           name: "James Flinch",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       })
       .then((response) => {
@@ -91,6 +95,8 @@ describe("Update user use case", () => {
         data: {
           ...user.props,
           job: "driver",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       })
       .then((response) => {
@@ -114,6 +120,8 @@ describe("Update user use case", () => {
         data: {
           ...user.props,
           email: "updated-email@example.com",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       })
       .then((response) => {
@@ -133,13 +141,14 @@ describe("Update user use case", () => {
       });
   });
 
-  it("should be able update just password from user", async () => {
+  it("should be able update just newPassword from user", async () => {
     await updateUserUseCase
       .execute({
         id: user.id,
         data: {
           ...user.props,
-          password: "updated-password",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       })
       .then((response) => {
@@ -165,6 +174,8 @@ describe("Update user use case", () => {
         id: "1234567890000000",
         data: {
           ...user.props,
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       });
     }, UserNotFoundError);
@@ -178,7 +189,8 @@ describe("Update user use case", () => {
           name: "",
           job: "Cop".repeat(260),
           email: "@example.com",
-          password: "123",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       });
     }, NameShouldNotBeEmptyError);
@@ -191,8 +203,23 @@ describe("Update user use case", () => {
         data: {
           ...user.props,
           email: "existing-email@example.com",
+          currentPassword: "updatedPassword",
+          newPassword: "updatedPassword",
         },
       });
     }, UserAlreadyExistsError);
+  });
+
+  it("should not be able update user if current password is invalid", async () => {
+    await rejects(async () => {
+      await updateUserUseCase.execute({
+        id: user.id,
+        data: {
+          ...user.props,
+          currentPassword: "fakeUpdatedPassword",
+          newPassword: "updatedPassword",
+        },
+      });
+    }, TheCurrentPasswordIsInvalidError);
   });
 });
