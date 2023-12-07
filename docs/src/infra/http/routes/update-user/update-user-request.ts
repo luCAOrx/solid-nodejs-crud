@@ -23,13 +23,14 @@ export const updateUserRequest: Operation = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/UserRequestBody",
+          $ref: "#/components/schemas/UpdateUserRequestBody",
         },
         example: {
           name: "John Doe",
           job: "Development",
           email: "johndoe@example.com",
-          password: "1234567890",
+          currentPassword: "1234567890",
+          newPassword: "123456789ADCDEF",
         },
       },
     },
