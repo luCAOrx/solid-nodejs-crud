@@ -69,6 +69,30 @@ export const swaggerComponents: Components = {
       },
     },
 
+    UpdateUserRequestBody: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+        },
+        job: {
+          type: "string",
+        },
+        email: {
+          type: "string",
+          format: "email",
+        },
+        currentPassword: {
+          type: "string",
+          format: "password",
+        },
+        newPassword: {
+          type: "string",
+          format: "password",
+        },
+      },
+    },
+
     UserRouteParams: {
       type: "string",
       properties: {
@@ -112,6 +136,16 @@ export const swaggerComponents: Components = {
         refreshToken: {
           type: "string",
           format: "uuid",
+        },
+      },
+    },
+
+    ForgotPasswordRequestBody: {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          format: "email",
         },
       },
     },
