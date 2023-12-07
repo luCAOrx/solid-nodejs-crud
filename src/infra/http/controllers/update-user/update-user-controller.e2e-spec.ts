@@ -50,7 +50,8 @@ export function updateUserControllerEndToEndTests(): void {
           name: "Frank Wells",
           job: "development",
           email: "frank@example.com",
-          password: "1234567890",
+          currentPassword: "1234567890",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -85,7 +86,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           name: "James Wilson",
-          password: "1234567890",
+          currentPassword: "1234567890ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -120,7 +122,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           job: "Driver",
-          password: "1234567890",
+          currentPassword: "1234567890ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -155,7 +158,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           email: "updated-email@example.com",
-          password: "1234567890",
+          currentPassword: "1234567890ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -189,7 +193,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
         data: {
           ...login.user,
-          password: "12345678900102030405",
+          currentPassword: "1234567890ADCDEF",
+          newPassword: "123456789ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -205,6 +210,46 @@ export function updateUserControllerEndToEndTests(): void {
             created_at: responseBody.user.created_at,
             updated_at: responseBody.user.updated_at,
           },
+        });
+
+        await MakeRequestFactory.execute({
+          url: `${String(process.env.TEST_SERVER_URL)}/users/refresh-token`,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: {
+            refreshToken: login.refreshToken.id,
+          },
+        }).then(async (response) => {
+          const refreshTokenResponseBody = await response.json();
+
+          login.refreshToken = refreshTokenResponseBody.refreshToken;
+          login.token = refreshTokenResponseBody.token;
+        });
+      });
+    });
+
+    it("should not be able to update user without route params", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          ...login.user,
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 404);
+        deepStrictEqual(responseBody, {
+          statusCode: 404,
+          message: "Page not found",
+          error: "Not Found",
         });
       });
     });
@@ -222,7 +267,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           email: "joe4@example.com",
-          password: "12345678900102030405",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -236,25 +282,29 @@ export function updateUserControllerEndToEndTests(): void {
       });
     });
 
-    it("should not be able to update user without route params", async () => {
+    it("should not be able update user if current password is invalid", async () => {
       await MakeRequestFactory.execute({
-        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/`,
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
         },
         data: {
           ...login.user,
-          password: "1234567890",
+          currentPassword: "fakePassword",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
 
-        deepStrictEqual(response.status, 404);
+        deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
-          statusCode: 404,
-          message: "Page not found",
-          error: "Not Found",
+          statusCode: 400,
+          message: "The current password is invalid",
+          error: "Bad request",
         });
       });
     });
@@ -277,13 +327,13 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
     });
 
-    it("should not be able to update the user if the request body properties are not the same as name, job, email and password", async () => {
+    it("should not be able to update the user if the request body properties are not the same as name, job, email, currentPassword and newPassword", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -297,7 +347,8 @@ export function updateUserControllerEndToEndTests(): void {
           fakeName: "zzzzz",
           fakeJob: "xxxxx",
           fakeEmail: "lllllll",
-          fakePassword: "nnnnnn",
+          fakeCurrentPassword: "nnnnnn",
+          fakeNewPassword: "yyyyyyy",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -306,7 +357,7 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
@@ -325,7 +376,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           job: "development",
           email: "frank@example.com",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -334,7 +386,7 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
@@ -353,7 +405,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           name: "James Wilson",
           email: "frank@example.com",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -362,7 +415,7 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
@@ -381,7 +434,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           name: "James Wilson",
           job: "driver",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -390,13 +444,13 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
     });
 
-    it("should not be able update just password from user without property password", async () => {
+    it("should not be able update just password from user without property currentPassword", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -410,6 +464,7 @@ export function updateUserControllerEndToEndTests(): void {
           name: "James Wilson",
           job: "driver",
           email: "updated-email@example.com",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -418,7 +473,36 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(responseBody, {
           statusCode: 400,
           message:
-            "The properties: name, job, email and password, should be provided in the request body",
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able update just password from user without property newPassword", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          name: "James Wilson",
+          job: "driver",
+          email: "updated-email@example.com",
+          currentPassword: "123456789ADCDEF",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message:
+            "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
           error: "Bad request",
         });
       });
@@ -436,7 +520,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
         data: {
           ...login.user,
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -463,7 +548,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           name: "",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -490,7 +576,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           name: "Frank".repeat(260),
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -517,7 +604,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           name: "Fran",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -544,7 +632,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           job: "",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -555,6 +644,22 @@ export function updateUserControllerEndToEndTests(): void {
           message: "The field job should not be empty",
           error: "Bad request",
         });
+      });
+
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/refresh-token`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          refreshToken: login.refreshToken.id,
+        },
+      }).then(async (response) => {
+        const refreshTokenResponseBody = await response.json();
+
+        login.refreshToken = refreshTokenResponseBody.refreshToken;
+        login.token = refreshTokenResponseBody.token;
       });
     });
 
@@ -571,7 +676,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           job: "doctor".repeat(260),
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -598,7 +704,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           job: "doc",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -625,7 +732,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           email: "@example.com",
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -654,7 +762,8 @@ export function updateUserControllerEndToEndTests(): void {
         data: {
           ...login.user,
           email: `gregg@${domain}.com`,
-          password: "1234567890",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1234567890ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -668,7 +777,7 @@ export function updateUserControllerEndToEndTests(): void {
       });
     });
 
-    it("should not be able to update user with field password empty", async () => {
+    it("should not be able to update user with field currentPassword empty", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -680,7 +789,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
         data: {
           ...login.user,
-          password: "",
+          currentPassword: "",
+          newPassword: "123456789ADCDEF",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -688,13 +798,13 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
           statusCode: 400,
-          message: "The field password should not be empty",
+          message: "The current password is invalid",
           error: "Bad request",
         });
       });
     });
 
-    it("should not be able to update user with field password more than 255 characters", async () => {
+    it("should not be able to update user with field newPassword empty", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -706,7 +816,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
         data: {
           ...login.user,
-          password: "1".repeat(260),
+          currentPassword: "123456789ADCDEF",
+          newPassword: "",
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -714,13 +825,13 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
           statusCode: 400,
-          message: "The field password should be less than 255 characters",
+          message: "The field newPassword should not be empty",
           error: "Bad request",
         });
       });
     });
 
-    it("should not be able to update user with field password less than 10 characters", async () => {
+    it("should not be able to update user with field newPassword more than 255 characters", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -732,7 +843,8 @@ export function updateUserControllerEndToEndTests(): void {
         },
         data: {
           ...login.user,
-          password: "12345",
+          currentPassword: "123456789ADCDEF",
+          newPassword: "1".repeat(260),
         },
       }).then(async (response) => {
         const responseBody = await response.json();
@@ -740,7 +852,34 @@ export function updateUserControllerEndToEndTests(): void {
         deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
           statusCode: 400,
-          message: "The field password should be than 10 characters",
+          message: "The field newPassword should be less than 255 characters",
+          error: "Bad request",
+        });
+      });
+    });
+
+    it("should not be able to update user with field newPassword less than 10 characters", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
+          login.user.id
+        )}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${String(login.token)}`,
+        },
+        data: {
+          ...login.user,
+          currentPassword: "123456789ADCDEF",
+          newPassword: "12345",
+        },
+      }).then(async (response) => {
+        const responseBody = await response.json();
+
+        deepStrictEqual(response.status, 400);
+        deepStrictEqual(responseBody, {
+          statusCode: 400,
+          message: "The field newPassword should be than 10 characters",
           error: "Bad request",
         });
       });
