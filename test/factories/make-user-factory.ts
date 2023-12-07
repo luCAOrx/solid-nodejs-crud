@@ -100,6 +100,8 @@ export class MakeAdminUserFactory {
       id,
       props: { name, job, email, password, role },
       read_time,
+      password_reset_token,
+      password_reset_token_expiration,
       created_at,
     } = User.create({
       name: "Test Admin Name",
@@ -121,6 +123,8 @@ export class MakeAdminUserFactory {
         password: hashedPassword,
         role,
         read_time,
+        password_reset_token,
+        password_reset_token_expiration,
         created_at,
       },
     });
