@@ -7,6 +7,8 @@ async function main(): Promise<void> {
     id,
     props: { name, job, email, password, role },
     read_time,
+    password_reset_token,
+    password_reset_token_expiration,
     created_at,
   } = User.create({
     name: "Admin Name",
@@ -26,6 +28,8 @@ async function main(): Promise<void> {
       email,
       password: hashedPassword,
       role,
+      password_reset_token,
+      password_reset_token_expiration,
       read_time,
       created_at,
     },
