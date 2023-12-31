@@ -29,7 +29,11 @@ export class ForgotPasswordUseCase {
 
     const passwordResetToken = randomBytes(5).toString("hex");
 
-    const oneHourInUnixTimestamp = new Date(Date.now() + 60 * 60 * 1000);
+    const currentDate = new Date();
+
+    const oneHourInUnixTimestamp = new Date(
+      currentDate.getTime() + 60 * 60 * 1000
+    );
 
     try {
       await this.mailAdapter.sendMail({
