@@ -211,22 +211,6 @@ export function updateUserControllerEndToEndTests(): void {
             updated_at: responseBody.user.updated_at,
           },
         });
-
-        await MakeRequestFactory.execute({
-          url: `${String(process.env.TEST_SERVER_URL)}/users/refresh-token`,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: {
-            refreshToken: login.refreshToken.id,
-          },
-        }).then(async (response) => {
-          const refreshTokenResponseBody = await response.json();
-
-          login.refreshToken = refreshTokenResponseBody.refreshToken;
-          login.token = refreshTokenResponseBody.token;
-        });
       });
     });
 
@@ -255,6 +239,22 @@ export function updateUserControllerEndToEndTests(): void {
     });
 
     it("should not be able to update user with existing email", async () => {
+      await MakeRequestFactory.execute({
+        url: `${String(process.env.TEST_SERVER_URL)}/users/refresh-token`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          refreshToken: login.refreshToken.id,
+        },
+      }).then(async (response) => {
+        const refreshTokenResponseBody = await response.json();
+
+        login.refreshToken = refreshTokenResponseBody.refreshToken;
+        login.token = refreshTokenResponseBody.token;
+      });
+
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
@@ -645,7 +645,9 @@ export function updateUserControllerEndToEndTests(): void {
           error: "Bad request",
         });
       });
+    });
 
+    it("should not be able to update user with field job more than 255 characters", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/refresh-token`,
         method: "POST",
@@ -661,9 +663,7 @@ export function updateUserControllerEndToEndTests(): void {
         login.refreshToken = refreshTokenResponseBody.refreshToken;
         login.token = refreshTokenResponseBody.token;
       });
-    });
 
-    it("should not be able to update user with field job more than 255 characters", async () => {
       await MakeRequestFactory.execute({
         url: `${String(process.env.TEST_SERVER_URL)}/users/update-user/${String(
           login.user.id
