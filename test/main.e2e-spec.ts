@@ -9,6 +9,7 @@ import { getUserControllerEndToEndTests } from "@infra/http/controllers/get-user
 import { getUsersControllerEndToEndTests } from "@infra/http/controllers/get-users/get-users-controller.e2e-spec";
 import { refreshJwtTokenControllerEndToEndTests } from "@infra/http/controllers/refresh-jwt-token/refresh-jwt-token-controller.e2e-spec";
 import { registerUserControllerEndToEndTests } from "@infra/http/controllers/register-user/register-user-controller.e2e-spec";
+import { resetPasswordControllerEndToEndTests } from "@infra/http/controllers/reset-password/reset-password-controller.e2e-spec";
 import { updateUserControllerEndToEndTests } from "@infra/http/controllers/update-user/update-user-controller.e2e-spec";
 import { pageNotFoundErrorEndToEndTests } from "@infra/http/errors/page-not-found/page-not-found-error.e2e-spec";
 import { ensureAuthenticatedMiddlewareEndToEndTests } from "@infra/http/middlewares/ensure-authenticated-middleware.e2e-spec";
@@ -55,6 +56,7 @@ describe("End to end (E2E) tests", () => {
   ensureAuthenticatedMiddlewareEndToEndTests();
   refreshJwtTokenControllerEndToEndTests();
   forgotPasswordControllerEndToEndTests();
+  resetPasswordControllerEndToEndTests();
 
   after(async () => {
     server.close();
