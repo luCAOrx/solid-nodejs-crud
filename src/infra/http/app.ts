@@ -16,6 +16,7 @@ import { getUserRoute } from "./routes/get-user.routes";
 import { getUsersRoute } from "./routes/get-users.routes";
 import { refreshJwtTokenRoute } from "./routes/refresh-jwt-token.routes";
 import { registerUserRoute } from "./routes/register-user.routes";
+import { resetPasswordRoute } from "./routes/reset-password.routes";
 import { updateUserRoute } from "./routes/update-user.routes";
 
 export const app = express();
@@ -37,4 +38,5 @@ app.use(deleteUserRoute);
 app.use(authenticateUserRoute);
 app.use(refreshJwtTokenRoute);
 app.use(forgotPasswordRoute);
+app.use(resetPasswordRoute);
 app.all("*", pageNotFoundError);
