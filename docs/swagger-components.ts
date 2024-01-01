@@ -149,5 +149,27 @@ export const swaggerComponents: Components = {
         },
       },
     },
+
+    ResetPasswordRequestBody: {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          format: "email",
+        },
+        code: {
+          type: "string",
+          format: "password",
+        },
+        newPassword: {
+          type: "string",
+          format: "password",
+        },
+        confirmPassword: {
+          type: "string",
+          format: "password",
+        },
+      },
+    },
   },
 };
