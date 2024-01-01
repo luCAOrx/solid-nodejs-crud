@@ -7,6 +7,7 @@ import { getUserRequest } from "./src/infra/http/routes/get-user/get-user-reques
 import { getUsersRequest } from "./src/infra/http/routes/get-users/get-users-request";
 import { refreshTokenRequest } from "./src/infra/http/routes/refresh-token/refresh-token-request";
 import { registerUserRequest } from "./src/infra/http/routes/register-user/register-user-request";
+import { resetPasswordRequest } from "./src/infra/http/routes/reset-password/reset-password-request";
 import { updateUserRequest } from "./src/infra/http/routes/update-user/update-user-request";
 
 export const swaggerPaths: Paths = {
@@ -40,5 +41,9 @@ export const swaggerPaths: Paths = {
 
   "/forgot-password": {
     post: forgotPasswordRequest,
+  },
+
+  "/reset-password": {
+    post: resetPasswordRequest,
   },
 };
