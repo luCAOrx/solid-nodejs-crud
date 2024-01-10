@@ -17,6 +17,8 @@ import { UserSecurityProvider } from "@infra/http/providers/user-security-provid
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
+import { BaseController } from "../base-controller";
+
 interface RegisterUserRequestBodyProps {
   name: string;
   job: string;
@@ -24,8 +26,11 @@ interface RegisterUserRequestBodyProps {
   password: string;
 }
 
-export class RegisterUserController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class RegisterUserController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { name, job, email, password } =
       request.body as RegisterUserRequestBodyProps;
 
@@ -47,7 +52,12 @@ export class RegisterUserController {
       .then(({ user }) => {
         const userResponse = UserViewModel.toHttp(user);
 
-        return response.status(201).json({ user: userResponse });
+        return this.created({
+          response,
+          message: {
+            user: userResponse,
+          },
+        });
       })
       .catch((error: Error) => {
         if (
@@ -64,10 +74,9 @@ export class RegisterUserController {
           error instanceof PasswordShouldBeLessThan255CharactersError ||
           error instanceof PasswordShouldBeThan10CharactersError
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message: error.message,
-            error: "Bad request",
           });
         }
 
@@ -82,11 +91,10 @@ export class RegisterUserController {
           !Object.hasOwn(request.body, "email") ||
           !Object.hasOwn(request.body, "password")
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message:
               "The properties: name, job, email and password, should be provided in the request body",
-            error: "Bad request",
           });
         }
       });

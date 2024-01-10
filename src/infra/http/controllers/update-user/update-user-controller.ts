@@ -19,6 +19,8 @@ import { UserSecurityProvider } from "@infra/http/providers/user-security-provid
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
+import { BaseController } from "../base-controller";
+
 interface UpdateUserRouteParamsProps {
   id: string;
 }
@@ -31,8 +33,11 @@ interface UpdateUserRequestBodyProps extends Request {
   newPassword: string;
 }
 
-export class UpdateUserController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class UpdateUserController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { id } = request.params as unknown as UpdateUserRouteParamsProps;
     const { name, job, email, currentPassword, newPassword } =
       request.body as UpdateUserRequestBodyProps;
@@ -58,7 +63,12 @@ export class UpdateUserController {
       .then(({ updatedUser }) => {
         const userResponse = UserViewModel.toHttp(updatedUser);
 
-        return response.status(201).json({ user: userResponse });
+        return this.created({
+          response,
+          message: {
+            user: userResponse,
+          },
+        });
       })
       .catch((error: Error) => {
         if (
@@ -82,10 +92,9 @@ export class UpdateUserController {
               ? error.message
               : error.message.replace("password", "newPassword");
 
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message,
-            error: "Bad request",
           });
         }
 
@@ -97,11 +106,10 @@ export class UpdateUserController {
           !Object.hasOwn(request.body, "currentPassword") ||
           !Object.hasOwn(request.body, "newPassword")
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message:
               "The properties: name, job, email, currentPassword, newPassword, should be provided in the request body",
-            error: "Bad request",
           });
         }
       });

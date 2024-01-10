@@ -6,6 +6,8 @@ import { GetUsersUseCase } from "@domain/use-cases/get-users/get-users-use-case"
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
+import { BaseController } from "../base-controller";
+
 interface GetUserRouteParamsProps {
   id: string;
 }
@@ -15,8 +17,11 @@ interface GetUserQueryParamsProps {
   takePage: string;
 }
 
-export class GetUsersController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class GetUsersController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { id } = request.params as unknown as GetUserRouteParamsProps;
 
     const { page, takePage } =
@@ -32,18 +37,14 @@ export class GetUsersController {
           return UserViewModel.toHttp(user);
         });
 
-        return response.status(200).json({ userOrUsers });
+        return this.ok({ response, message: { userOrUsers } });
       })
       .catch((error: Error) => {
         if (
           error instanceof UserNotFoundError ||
           error instanceof AccessDeniedError
         ) {
-          return response.status(400).json({
-            statusCode: 400,
-            message: error.message,
-            error: "Bad request",
-          });
+          return this.clientError({ response, message: error.message });
         }
 
         if (
@@ -53,11 +54,10 @@ export class GetUsersController {
           !Object.hasOwn(request.query, "page") ||
           !Object.hasOwn(request.query, "takePage")
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message:
               "The query parameters: page and takePage, must be provided in the query parameters of the request",
-            error: "Bad request",
           });
         }
       });

@@ -11,6 +11,8 @@ import { PasswordShouldNotBeEmptyError } from "@domain/validations/password/erro
 import { UserSecurityProvider } from "@infra/http/providers/user-security-provider";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
+import { BaseController } from "../base-controller";
+
 interface ResetPasswordRequestBodyProps {
   email: string;
   code: string;
@@ -18,8 +20,11 @@ interface ResetPasswordRequestBodyProps {
   confirmPassword: string;
 }
 
-export class ResetPasswordController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class ResetPasswordController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { email, code, confirmPassword, newPassword } =
       request.body as ResetPasswordRequestBodyProps;
 
@@ -39,7 +44,7 @@ export class ResetPasswordController {
         confirmPassword,
       })
       .then(({ message }) => {
-        return response.status(201).json({ message });
+        return this.created({ response, message: { message } });
       })
       .catch((error: Error) => {
         if (
@@ -55,10 +60,9 @@ export class ResetPasswordController {
             ? error.message.replace("password", "newPassword")
             : error.message;
 
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message,
-            error: "Bad request",
           });
         }
 
@@ -67,11 +71,10 @@ export class ResetPasswordController {
           !Object.hasOwn(request.body, "email") ||
           !Object.hasOwn(request.body, "newPassword")
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message:
               "The properties: email, code, newPassword and confirmPassword, should be provided in the request body",
-            error: "Bad request",
           });
         }
       });

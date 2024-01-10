@@ -6,12 +6,17 @@ import { ForgotPasswordUseCase } from "@domain/use-cases/forgot-password/forgot-
 import { NodeMailerMailAdapter } from "@infra/http/adapters/nodemailer-mail-adapter";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
+import { BaseController } from "../base-controller";
+
 interface ForgotPasswordRequestBodyProps extends Request {
   email: string;
 }
 
-export class ForgotPasswordController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class ForgotPasswordController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { email } = request.body as ForgotPasswordRequestBodyProps;
 
     const prismaUserRepository = new PrismaUserRepository();
@@ -24,29 +29,24 @@ export class ForgotPasswordController {
     await forgotPasswordUseCase
       .execute({ email })
       .then(({ message }) => {
-        return response.status(201).json({ message });
+        return this.created({ response, message: { message } });
       })
       .catch((error: Error) => {
         if (
           error instanceof UserNotFoundError ||
           error instanceof UnableToSendPasswordRecoveryEmailError
         ) {
-          return response.status(400).json({
-            statusCode: 400,
-            message: error.message,
-            error: "Bad request",
-          });
+          return this.clientError({ response, message: error.message });
         }
 
         if (
           Object.keys(request.body).length === 0 ||
           !Object.hasOwn(request.body, "email")
         ) {
-          return response.status(400).json({
-            statusCode: 400,
+          return this.clientError({
+            response,
             message:
               "The property: email should be provided in the request body",
-            error: "Bad request",
           });
         }
       });

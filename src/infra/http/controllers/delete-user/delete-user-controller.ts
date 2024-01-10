@@ -4,12 +4,17 @@ import { DeleteUserUseCase } from "@domain/use-cases/delete-user/delete-user-use
 import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
+import { BaseController } from "../base-controller";
+
 interface DeleteUserRouteParamsProps {
   id: string;
 }
 
-export class DeleteUserController {
-  async handle(request: Request, response: Response): Promise<void> {
+export class DeleteUserController extends BaseController {
+  protected async executeImplementation(
+    request: Request,
+    response: Response
+  ): Promise<any> {
     const { id } = request.params as unknown as DeleteUserRouteParamsProps;
 
     const prismaUserRepository = new PrismaUserRepository();
@@ -17,14 +22,12 @@ export class DeleteUserController {
 
     await deleteUserUseCase
       .execute({ id })
-      .then(() => response.status(204).end())
+      .then(() => {
+        return this.noContent({ response });
+      })
       .catch((error: Error) => {
         if (error instanceof UserNotFoundError) {
-          return response.status(400).json({
-            statusCode: 400,
-            message: error.message,
-            error: "Bad request",
-          });
+          return this.clientError({ response, message: error.message });
         }
       });
   }
