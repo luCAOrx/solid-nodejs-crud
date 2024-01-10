@@ -4,7 +4,6 @@ import { AuthenticateUserController } from "../controllers/authenticate-user/aut
 
 export const authenticateUserRoute = Router();
 
-authenticateUserRoute.post(
-  "/users/authenticate",
-  new AuthenticateUserController().handle
-);
+authenticateUserRoute.post("/users/authenticate", async (request, response) => {
+  await new AuthenticateUserController().execute(request, response);
+});

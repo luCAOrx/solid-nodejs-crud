@@ -4,7 +4,6 @@ import { ForgotPasswordController } from "../controllers/forgot-password/forgot-
 
 export const forgotPasswordRoute = Router();
 
-forgotPasswordRoute.post(
-  "/forgot-password",
-  new ForgotPasswordController().handle
-);
+forgotPasswordRoute.post("/forgot-password", async (request, response) => {
+  await new ForgotPasswordController().execute(request, response);
+});

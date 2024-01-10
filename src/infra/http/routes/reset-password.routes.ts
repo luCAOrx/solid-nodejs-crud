@@ -4,7 +4,6 @@ import { ResetPasswordController } from "../controllers/reset-password/reset-pas
 
 export const resetPasswordRoute = Router();
 
-resetPasswordRoute.post(
-  "/reset-password",
-  new ResetPasswordController().handle
-);
+resetPasswordRoute.post("/reset-password", async (request, response) => {
+  await new ResetPasswordController().execute(request, response);
+});

@@ -4,7 +4,6 @@ import { RefreshJwtTokenController } from "../controllers/refresh-jwt-token/refr
 
 export const refreshJwtTokenRoute = Router();
 
-refreshJwtTokenRoute.post(
-  "/users/refresh-token",
-  new RefreshJwtTokenController().handle
-);
+refreshJwtTokenRoute.post("/users/refresh-token", async (request, response) => {
+  await new RefreshJwtTokenController().execute(request, response);
+});

@@ -8,5 +8,7 @@ export const getUsersRoute = Router();
 getUsersRoute.get(
   "/users/get-users/:id",
   new EnsureAuthenticated().handle,
-  new GetUsersController().handle
+  async (request, response) => {
+    await new GetUsersController().execute(request, response);
+  }
 );

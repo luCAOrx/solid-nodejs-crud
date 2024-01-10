@@ -8,5 +8,7 @@ export const deleteUserRoute = Router();
 deleteUserRoute.delete(
   "/users/delete-user/:id",
   new EnsureAuthenticated().handle,
-  new DeleteUserController().handle
+  async (request, response) => {
+    await new DeleteUserController().execute(request, response);
+  }
 );

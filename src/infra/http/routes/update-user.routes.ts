@@ -8,5 +8,7 @@ export const updateUserRoute = Router();
 updateUserRoute.put(
   "/users/update-user/:id",
   new EnsureAuthenticated().handle,
-  new UpdateUserController().handle
+  async (request, response) => {
+    await new UpdateUserController().execute(request, response);
+  }
 );

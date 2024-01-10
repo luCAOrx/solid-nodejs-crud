@@ -4,4 +4,6 @@ import { RegisterUserController } from "../controllers/register-user/register-us
 
 export const registerUserRoute = Router();
 
-registerUserRoute.post("/users/register", new RegisterUserController().handle);
+registerUserRoute.post("/users/register", async (request, response) => {
+  await new RegisterUserController().execute(request, response);
+});
