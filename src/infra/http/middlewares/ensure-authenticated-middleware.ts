@@ -1,6 +1,8 @@
 import { type NextFunction, type Request, type Response } from "express";
 import { verify } from "jsonwebtoken";
 
+import { BaseController } from "../controllers/base-controller";
+
 interface DecodedJwt {
   sub: string;
 }
@@ -16,26 +18,35 @@ export class EnsureAuthenticated {
     const [scheme, token] = parts;
 
     if (authHeader === null || authHeader === undefined) {
-      return response.status(401).json({
-        statusCode: 401,
-        message: "The token should not be empty",
-        error: "Unauthorized",
+      return BaseController.unauthorized({
+        response,
+        message: {
+          statusCode: 401,
+          message: "The token should not be empty",
+          error: "Unauthorized",
+        },
       });
     }
 
     if (parts.length !== 2) {
-      return response.status(401).json({
-        statusCode: 401,
-        message: "The token should be two parts",
-        error: "Unauthorized",
+      return BaseController.unauthorized({
+        response,
+        message: {
+          statusCode: 401,
+          message: "The token should be two parts",
+          error: "Unauthorized",
+        },
       });
     }
 
     if (!/^Bearer$/i.test(scheme)) {
-      return response.status(401).json({
-        statusCode: 401,
-        message: "The token should be start with Bearer word",
-        error: "Unauthorized",
+      return BaseController.unauthorized({
+        response,
+        message: {
+          statusCode: 401,
+          message: "The token should be start with Bearer word",
+          error: "Unauthorized",
+        },
       });
     }
 
@@ -49,10 +60,13 @@ export class EnsureAuthenticated {
 
       next();
     } catch (error) {
-      return response.status(401).json({
-        statusCode: 401,
-        message: "The token is invalid",
-        error: "Unauthorized",
+      return BaseController.unauthorized({
+        response,
+        message: {
+          statusCode: 401,
+          message: "The token is invalid",
+          error: "Unauthorized",
+        },
       });
     }
   }
