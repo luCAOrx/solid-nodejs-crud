@@ -1,9 +1,9 @@
-import {type User} from "@domain/entities/user/user";
-import {type UserRepository} from "@domain/repositories/user-repository";
+import { type User } from "@domain/entities/user/user";
+import { type UserRepository } from "@domain/repositories/user-repository";
 
-import {BaseUseCase} from "../base-use-case";
-import {UserNotFoundError} from "../errors/user-not-found-error";
-import {AccessDeniedError} from "./errors/access-denied-error";
+import { BaseUseCase } from "../base-use-case";
+import { UserNotFoundError } from "../errors/user-not-found-error";
+import { AccessDeniedError } from "./errors/access-denied-error";
 
 interface GetUsersRequest {
   id: string;
