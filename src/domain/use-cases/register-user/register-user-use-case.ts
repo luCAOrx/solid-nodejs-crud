@@ -6,6 +6,7 @@ import { User } from "@domain/entities/user/user";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
+import { BaseUseCase } from "../base-use-case";
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
 
 interface CreateUserRequest {
@@ -19,16 +20,21 @@ interface CreateUserResponse {
   user: User;
 }
 
-export class RegisterUserUseCase {
+export class RegisterUserUseCase extends BaseUseCase<
+  CreateUserRequest,
+  CreateUserResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     name,
-    job,
     email,
+    job,
     password,
   }: CreateUserRequest): Promise<CreateUserResponse> {
     const nameOrError = Name.create(name);

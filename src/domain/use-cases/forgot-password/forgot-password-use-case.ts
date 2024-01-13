@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { type MailAdapter } from "@domain/adapters/mail-adapter";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
+import { BaseUseCase } from "../base-use-case";
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { UnableToSendPasswordRecoveryEmailError } from "./errors/unable-to-send-password-recovery-email-error";
 
@@ -14,13 +15,18 @@ interface ForgotPasswordResponse {
   message: string;
 }
 
-export class ForgotPasswordUseCase {
+export class ForgotPasswordUseCase extends BaseUseCase<
+  ForgotPasswordRequest,
+  ForgotPasswordResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly mailAdapter: MailAdapter
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     email,
   }: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     const userFound = await this.userRepository.findByEmail(email);

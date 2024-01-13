@@ -6,6 +6,7 @@ import { User } from "@domain/entities/user/user";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
+import { BaseUseCase } from "../base-use-case";
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
 import { TheCurrentPasswordIsInvalidError } from "./erros/the-current-password-is-invalid-error";
@@ -25,13 +26,18 @@ interface UpdateUserResponse {
   updatedUser: User;
 }
 
-export class UpdateUserUseCase {
+export class UpdateUserUseCase extends BaseUseCase<
+  UpdateUserRequest,
+  UpdateUserResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     id,
     data: { name, job, email, currentPassword, newPassword },
   }: UpdateUserRequest): Promise<UpdateUserResponse> {

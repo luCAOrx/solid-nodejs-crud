@@ -2,6 +2,7 @@ import { Password } from "@domain/entities/password/password";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
+import { BaseUseCase } from "../base-use-case";
 import { UserNotFoundError } from "../errors/user-not-found-error";
 import { InvalidCodeToResetPasswordError } from "./errors/invalid-code-to-reset-password-error";
 import { PasswordResetTokenHasExpiredError } from "./errors/password-reset-token-has-expired-error";
@@ -18,17 +19,22 @@ interface ResetPasswordResponse {
   message: string;
 }
 
-export class ResetPasswordUseCase {
+export class ResetPasswordUseCase extends BaseUseCase<
+  ResetPasswordRequest,
+  ResetPasswordResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
-    email,
+  protected async execute({
     code,
-    newPassword,
     confirmPassword,
+    email,
+    newPassword,
   }: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     const userFound = await this.userRepository.findByEmail(email);
 

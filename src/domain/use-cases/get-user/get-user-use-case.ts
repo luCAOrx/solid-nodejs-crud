@@ -1,6 +1,7 @@
 import { type User } from "@domain/entities/user/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
+import { BaseUseCase } from "../base-use-case";
 import { UserNotFoundError } from "../errors/user-not-found-error";
 
 interface GetUserRequest {
@@ -11,10 +12,15 @@ interface GetUserResponse {
   user: User;
 }
 
-export class GetUserUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+export class GetUserUseCase extends BaseUseCase<
+  GetUserRequest,
+  GetUserResponse
+> {
+  constructor(private readonly userRepository: UserRepository) {
+    super();
+  }
 
-  async execute({ id }: GetUserRequest): Promise<GetUserResponse> {
+  protected async execute({ id }: GetUserRequest): Promise<GetUserResponse> {
     const userOrNull = await this.userRepository.findById(id);
 
     if (userOrNull === null) throw new UserNotFoundError();

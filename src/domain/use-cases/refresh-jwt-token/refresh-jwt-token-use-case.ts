@@ -7,6 +7,7 @@ import { type UserRepository } from "@domain/repositories/user-repository";
 import { GenerateJwtToken } from "@domain/utils/jwt-token/generate-jwt-token";
 import { GenerateRefreshToken } from "@domain/utils/refresh-token/generate-refresh-jwt-token";
 
+import { BaseUseCase } from "../base-use-case";
 import { RefreshTokenNotFoundError } from "./errors/refresh-token-not-found-error";
 
 interface RefreshJwtTokenRequest {
@@ -18,14 +19,19 @@ interface RefreshJwtTokenResponse {
   token: string;
 }
 
-export class RefreshJwtTokenUseCase {
+export class RefreshJwtTokenUseCase extends BaseUseCase<
+  RefreshJwtTokenRequest,
+  RefreshJwtTokenResponse
+> {
   constructor(
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly userRepository: UserRepository,
     private readonly securityProvider: SecurityProvider
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     refreshTokenId,
   }: RefreshJwtTokenRequest): Promise<RefreshJwtTokenResponse> {
     const refreshTokenFound = await this.refreshTokenRepository.findById(

@@ -1,8 +1,9 @@
-import { type User } from "@domain/entities/user/user";
-import { type UserRepository } from "@domain/repositories/user-repository";
+import {type User} from "@domain/entities/user/user";
+import {type UserRepository} from "@domain/repositories/user-repository";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { AccessDeniedError } from "./errors/access-denied-error";
+import {BaseUseCase} from "../base-use-case";
+import {UserNotFoundError} from "../errors/user-not-found-error";
+import {AccessDeniedError} from "./errors/access-denied-error";
 
 interface GetUsersRequest {
   id: string;
@@ -10,10 +11,12 @@ interface GetUsersRequest {
   takePage?: number;
 }
 
-export class GetUsersUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+export class GetUsersUseCase extends BaseUseCase<GetUsersRequest, User[]> {
+  constructor(private readonly userRepository: UserRepository) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     id,
     page = 1,
     takePage = 5,

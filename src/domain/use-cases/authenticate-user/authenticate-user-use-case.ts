@@ -8,6 +8,7 @@ import { type UserRepository } from "@domain/repositories/user-repository";
 import { GenerateJwtToken } from "@domain/utils/jwt-token/generate-jwt-token";
 import { GenerateRefreshToken } from "@domain/utils/refresh-token/generate-refresh-jwt-token";
 
+import { BaseUseCase } from "../base-use-case";
 import { InvalidEmailOrPasswordError } from "./errors/invalid-email-or-password-error";
 
 interface AuthenticateUserRequest {
@@ -21,14 +22,19 @@ interface AuthenticateUserResponse {
   refreshToken: RefreshTokenProps;
 }
 
-export class AuthenticateUserUseCase {
+export class AuthenticateUserUseCase extends BaseUseCase<
+  AuthenticateUserRequest,
+  AuthenticateUserResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly securityProvider: SecurityProvider,
     private readonly refreshTokenRepository: RefreshTokenRepository
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute({
+  protected async execute({
     email,
     password,
   }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
