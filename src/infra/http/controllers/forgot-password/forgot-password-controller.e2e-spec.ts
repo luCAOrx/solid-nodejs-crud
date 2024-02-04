@@ -1,7 +1,7 @@
 import { deepStrictEqual } from "node:assert";
 import { describe, it } from "node:test";
 
-import { UnableToSendPasswordRecoveryEmailError } from "@domain/use-cases/forgot-password/errors/unable-to-send-password-recovery-email-error";
+import { ForgotPasswordUseCaseErrors } from "@domain/use-cases/forgot-password/errors/forgot-password-use-case-errors";
 import { NodeMailerMailAdapter } from "@infra/http/adapters/nodemailer-mail-adapter";
 import { MakeRequestFactory } from "@test/factories/make-request-factory";
 
@@ -52,8 +52,8 @@ export function forgotPasswordControllerEndToEndTests(): void {
 
     it("should not be able to send email to recover password if sending email fails to send email", async () => {
       class MockNodeMailAdapter extends NodeMailerMailAdapter {
-        async sendMail(options: any): Promise<void> {
-          throw new UnableToSendPasswordRecoveryEmailError();
+        async sendMail(): Promise<void> {
+          throw new ForgotPasswordUseCaseErrors.UnableToSendPasswordRecoveryEmailError();
         }
       }
 
