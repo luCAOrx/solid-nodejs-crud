@@ -228,7 +228,7 @@ export function registerUserControllerEndToEndTests(): void {
           deepStrictEqual(response.status, 400);
           deepStrictEqual(responseBody, {
             statusCode: 400,
-            message: "The field name should be than 5 characters",
+            message: "The field name should be greater than 5 characters",
             error: "Bad request",
           });
         });
@@ -273,7 +273,7 @@ export function registerUserControllerEndToEndTests(): void {
           deepStrictEqual(response.status, 400);
           deepStrictEqual(responseBody, {
             statusCode: 400,
-            message: "The field job should be than 5 characters",
+            message: "The field job should be greater than 5 characters",
             error: "Bad request",
           });
         });
@@ -349,7 +349,7 @@ export function registerUserControllerEndToEndTests(): void {
           deepStrictEqual(response.status, 400);
           deepStrictEqual(responseBody, {
             statusCode: 400,
-            message: "The field password should be than 10 characters",
+            message: "The field password should be greater than 10 characters",
             error: "Bad request",
           });
         });

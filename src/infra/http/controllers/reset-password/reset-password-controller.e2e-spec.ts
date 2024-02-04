@@ -221,7 +221,7 @@ export function resetPasswordControllerEndToEndTests(): void {
         deepStrictEqual(response.status, 400);
         deepStrictEqual(responseBody, {
           statusCode: 400,
-          message: "The field newPassword should be than 10 characters",
+          message: "The field newPassword should be greater than 10 characters",
           error: "Bad request",
         });
       });
