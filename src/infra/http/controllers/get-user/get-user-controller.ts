@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
 import { GetUserUseCase } from "@domain/use-cases/get-user/get-user-use-case";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
@@ -29,7 +29,7 @@ export class GetUserController extends BaseController {
         return this.ok({ response, message: userResponse });
       })
       .catch((error: Error) => {
-        if (error instanceof UserNotFoundError) {
+        if (error instanceof GlobalUseCaseErrors.UserNotFoundError) {
           return this.clientError({ response, message: error.message });
         }
       });

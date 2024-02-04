@@ -1,13 +1,9 @@
 import { type Request, type Response } from "express";
+import { ValueObjectErrors } from "src/core/logic/domain/value-object/errors/value-object-errors";
 
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
-import { InvalidCodeToResetPasswordError } from "@domain/use-cases/reset-password/errors/invalid-code-to-reset-password-error";
-import { PasswordResetTokenHasExpiredError } from "@domain/use-cases/reset-password/errors/password-reset-token-has-expired-error";
-import { PasswordsDoNotMatchError } from "@domain/use-cases/reset-password/errors/passwords-do-not-match-error";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
+import { ResetPasswordUseCaseErrors } from "@domain/use-cases/reset-password/errors/reset-password-use-case-errors";
 import { ResetPasswordUseCase } from "@domain/use-cases/reset-password/reset-password-use-case";
-import { PasswordShouldBeLessThan255CharactersError } from "@domain/validations/password/errors/password-should-be-less-than-255-characters-error";
-import { PasswordShouldBeThan10CharactersError } from "@domain/validations/password/errors/password-should-be-than-10-characters-error";
-import { PasswordShouldNotBeEmptyError } from "@domain/validations/password/errors/password-should-not-be-empty-error";
 import { UserSecurityProvider } from "@infra/http/providers/user-security-provider";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
@@ -48,13 +44,16 @@ export class ResetPasswordController extends BaseController {
       })
       .catch((error: Error) => {
         if (
-          error instanceof UserNotFoundError ||
-          error instanceof InvalidCodeToResetPasswordError ||
-          error instanceof PasswordResetTokenHasExpiredError ||
-          error instanceof PasswordsDoNotMatchError ||
-          error instanceof PasswordShouldNotBeEmptyError ||
-          error instanceof PasswordShouldBeThan10CharactersError ||
-          error instanceof PasswordShouldBeLessThan255CharactersError
+          error instanceof GlobalUseCaseErrors.UserNotFoundError ||
+          error instanceof
+            ResetPasswordUseCaseErrors.InvalidCodeToResetPasswordError ||
+          error instanceof
+            ResetPasswordUseCaseErrors.PasswordResetTokenHasExpiredError ||
+          error instanceof
+            ResetPasswordUseCaseErrors.PasswordsDoNotMatchError ||
+          error instanceof ValueObjectErrors.ValueObjectShouldNotBeEmptyError ||
+          error instanceof ValueObjectErrors.ValueObjectShouldBeLessThanError ||
+          error instanceof ValueObjectErrors.ValueObjectShouldBeGreaterThanError
         ) {
           const message = error.message.startsWith("The field password")
             ? error.message.replace("password", "newPassword")

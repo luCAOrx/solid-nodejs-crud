@@ -1,8 +1,8 @@
 import { type Request, type Response } from "express";
 
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
-import { UnableToSendPasswordRecoveryEmailError } from "@domain/use-cases/forgot-password/errors/unable-to-send-password-recovery-email-error";
+import { ForgotPasswordUseCaseErrors } from "@domain/use-cases/forgot-password/errors/forgot-password-use-case-errors";
 import { ForgotPasswordUseCase } from "@domain/use-cases/forgot-password/forgot-password-use-case";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 import { NodeMailerMailAdapter } from "@infra/http/adapters/nodemailer-mail-adapter";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
@@ -33,8 +33,9 @@ export class ForgotPasswordController extends BaseController {
       })
       .catch((error: Error) => {
         if (
-          error instanceof UserNotFoundError ||
-          error instanceof UnableToSendPasswordRecoveryEmailError
+          error instanceof GlobalUseCaseErrors.UserNotFoundError ||
+          error instanceof
+            ForgotPasswordUseCaseErrors.UnableToSendPasswordRecoveryEmailError
         ) {
           return this.clientError({ response, message: error.message });
         }

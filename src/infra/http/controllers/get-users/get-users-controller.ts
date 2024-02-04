@@ -1,8 +1,8 @@
 import { type Request, type Response } from "express";
 
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
-import { AccessDeniedError } from "@domain/use-cases/get-users/errors/access-denied-error";
+import { GetUsersUseCaseErrors } from "@domain/use-cases/get-users/errors/get-users-use-case-errors";
 import { GetUsersUseCase } from "@domain/use-cases/get-users/get-users-use-case";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 import { UserViewModel } from "@infra/http/view-models/user-view-model";
 
@@ -41,8 +41,8 @@ export class GetUsersController extends BaseController {
       })
       .catch((error: Error) => {
         if (
-          error instanceof UserNotFoundError ||
-          error instanceof AccessDeniedError
+          error instanceof GlobalUseCaseErrors.UserNotFoundError ||
+          error instanceof GetUsersUseCaseErrors.AccessDeniedError
         ) {
           return this.clientError({ response, message: error.message });
         }

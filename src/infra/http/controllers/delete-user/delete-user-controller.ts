@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 
 import { DeleteUserUseCase } from "@domain/use-cases/delete-user/delete-user-use-case";
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
 
 import { BaseController } from "../base-controller";
@@ -26,7 +26,7 @@ export class DeleteUserController extends BaseController {
         return this.noContent({ response });
       })
       .catch((error: Error) => {
-        if (error instanceof UserNotFoundError) {
+        if (error instanceof GlobalUseCaseErrors.UserNotFoundError) {
           return this.clientError({ response, message: error.message });
         }
       });

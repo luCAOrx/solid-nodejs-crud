@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 
-import { AuthenticateUserUseCase } from "@domain/use-cases/authenticate-user/authenticate-user-use-case";
-import { InvalidEmailOrPasswordError } from "@domain/use-cases/authenticate-user/errors/invalid-email-or-password-error";
+import AuthenticateUserUseCase from "@domain/use-cases/authenticate-user/authenticate-user-use-case";
+import { AuthenticateUserUseCaseErrors } from "@domain/use-cases/authenticate-user/errors/authenticate-user-use-case-errors";
 import { UserSecurityProvider } from "@infra/http/providers/user-security-provider";
 import { PrismaRefreshTokenRepository } from "@infra/http/repositories/prisma-refresh-token-repository";
 import { PrismaUserRepository } from "@infra/http/repositories/prisma-user-repository";
@@ -49,7 +49,10 @@ export class AuthenticateUserController extends BaseController {
         });
       })
       .catch((error: Error) => {
-        if (error instanceof InvalidEmailOrPasswordError) {
+        if (
+          error instanceof
+          AuthenticateUserUseCaseErrors.InvalidEmailOrPasswordError
+        ) {
           return this.clientError({ response, message: error.message });
         }
 
