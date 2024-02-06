@@ -1,18 +1,13 @@
-import { PasswordValidation } from "@domain/validations/password/password-validation";
+import { ValueObjectBase } from "src/core/logic/domain/value-object/value-object-base";
 
-export class Password {
-  public get value(): string {
-    return this.password;
-  }
-
-  public set value(password: string) {
-    this.password = password;
-  }
-
-  private constructor(private password: string) {}
-
+export class Password extends ValueObjectBase {
   static create(password: string): Password {
-    const validatedPassword = PasswordValidation.valid(password);
+    const validatedPassword = this.valid({
+      propertyValue: password,
+      propertyName: "password",
+      lessThan: 255,
+      greaterThan: 10,
+    });
 
     return new Password(validatedPassword);
   }

@@ -1,24 +1,36 @@
-import { EmailValidation } from "@domain/validations/email/email-validation";
+import { ValueObjectErrors } from "src/core/logic/domain/value-object/errors/value-object-errors";
+import { ValueObjectBase } from "src/core/logic/domain/value-object/value-object-base";
 
-export class Email {
-  public get value(): string {
-    return this.email;
-  }
+export class Email extends ValueObjectBase {
+  private static emailAddressRegexTest(email: string): boolean {
+    const regex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  public set value(email: string) {
-    this.email = email;
-  }
+    if (!regex.test(email)) {
+      return false;
+    }
 
-  private constructor(private email: string) {}
-
-  private static format(email: string): string {
-    return email.trim().toLowerCase();
+    return true;
   }
 
   static create(email: string): Email {
-    const formattedEmail = this.format(email);
+    const formattedEmail = this.format({
+      propertyValue: email,
+      isLowerCase: true,
+    });
 
-    const validatedEmail = EmailValidation.valid(formattedEmail);
+    const isValidEmail = this.emailAddressRegexTest(formattedEmail);
+
+    if (!isValidEmail)
+      throw new ValueObjectErrors.ValueObjectShouldBeValidValueObjectError({
+        propertyName: "email",
+      });
+
+    const validatedEmail = this.valid({
+      propertyValue: formattedEmail,
+      propertyName: "email",
+      lessThan: 255,
+    });
 
     return new Email(validatedEmail);
   }

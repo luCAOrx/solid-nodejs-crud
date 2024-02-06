@@ -1,24 +1,15 @@
-import { JobValidation } from "@domain/validations/job/job-validation";
+import { ValueObjectBase } from "src/core/logic/domain/value-object/value-object-base";
 
-export class Job {
-  public get value(): string {
-    return this.job;
-  }
-
-  public set value(job: string) {
-    this.job = job;
-  }
-
-  private constructor(private job: string) {}
-
-  private static format(job: string): string {
-    return job.trim().toLowerCase();
-  }
-
+export class Job extends ValueObjectBase {
   static create(job: string): Job {
-    const formattedJob = this.format(job);
+    const formattedJob = this.format({ propertyValue: job, isLowerCase: true });
 
-    const validatedJob = JobValidation.validate(formattedJob);
+    const validatedJob = this.valid({
+      propertyValue: formattedJob,
+      propertyName: "job",
+      lessThan: 255,
+      greaterThan: 5,
+    });
 
     return new Job(validatedJob);
   }
