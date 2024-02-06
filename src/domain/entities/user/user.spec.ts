@@ -1,4 +1,4 @@
-import { ok, strictEqual } from "node:assert";
+import { ok, deepStrictEqual } from "node:assert";
 import { describe, it } from "node:test";
 
 import { Email } from "../email/email";
@@ -23,7 +23,7 @@ describe("User model", () => {
     });
 
     ok(userOrError);
-    strictEqual(userOrError, userOrError);
+    deepStrictEqual(userOrError, userOrError);
   });
 
   it("should be able to create a new admin user", () => {
@@ -36,6 +36,6 @@ describe("User model", () => {
     });
 
     ok(userOrError);
-    strictEqual(userOrError, userOrError);
+    deepStrictEqual(userOrError, userOrError);
   });
 });
