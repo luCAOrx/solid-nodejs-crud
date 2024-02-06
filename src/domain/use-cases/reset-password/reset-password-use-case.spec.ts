@@ -7,11 +7,9 @@ import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-da
 import { UserMailAdapter } from "@test/utils/user-mail-adapter";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
 import { ForgotPasswordUseCase } from "../forgot-password/forgot-password-use-case";
-import { InvalidCodeToResetPasswordError } from "./errors/invalid-code-to-reset-password-error";
-import { PasswordResetTokenHasExpiredError } from "./errors/password-reset-token-has-expired-error";
-import { PasswordsDoNotMatchError } from "./errors/passwords-do-not-match-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { ResetPasswordUseCaseErrors } from "./errors/reset-password-use-case-errors";
 import { ResetPasswordUseCase } from "./reset-password-use-case";
 
 describe("Reset password use case", () => {
@@ -77,7 +75,7 @@ describe("Reset password use case", () => {
         newPassword: "newPassword123",
         confirmPassword: "newPassword123",
       });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 
   it("should not be able reset password if reset password code is invalid", async () => {
@@ -88,7 +86,7 @@ describe("Reset password use case", () => {
         newPassword: "newPassword123",
         confirmPassword: "newPassword123",
       });
-    }, InvalidCodeToResetPasswordError);
+    }, ResetPasswordUseCaseErrors.InvalidCodeToResetPasswordError);
   });
 
   it("should not be able reset password if reset password token has expired", async () => {
@@ -108,7 +106,7 @@ describe("Reset password use case", () => {
         newPassword: "newPassword123",
         confirmPassword: "newPassword123",
       });
-    }, PasswordResetTokenHasExpiredError);
+    }, ResetPasswordUseCaseErrors.PasswordResetTokenHasExpiredError);
   });
 
   it("should not be able reset password if confirmPassword do not match newPassword", async () => {
@@ -121,6 +119,6 @@ describe("Reset password use case", () => {
         newPassword: "newPassword123",
         confirmPassword: "newPassword1234",
       });
-    }, PasswordsDoNotMatchError);
+    }, ResetPasswordUseCaseErrors.PasswordsDoNotMatchError);
   });
 });

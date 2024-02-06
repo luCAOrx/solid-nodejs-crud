@@ -8,8 +8,8 @@ import { InMemoryRefreshTokenDatabase } from "@test/in-memory-database/in-memory
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
-import { AuthenticateUserUseCase } from "../authenticate-user/authenticate-user-use-case";
-import { RefreshTokenNotFoundError } from "./errors/refresh-token-not-found-error";
+import AuthenticateUserUseCase from "../authenticate-user/authenticate-user-use-case";
+import { RefreshJwtTokenUseCaseErrors } from "./errors/refresh-jwt-token-use-case-errors";
 import { RefreshJwtTokenUseCase } from "./refresh-jwt-token-use-case";
 
 describe("Generate refresh jwt token use case", () => {
@@ -83,7 +83,7 @@ describe("Generate refresh jwt token use case", () => {
       await refreshJwtTokenUseCase.execute({
         refreshTokenId: "1234568080182409182",
       });
-    }, RefreshTokenNotFoundError);
+    }, RefreshJwtTokenUseCaseErrors.RefreshTokenNotFoundError);
   });
 
   it("should be able to return the same jwt token if the refresh token is not expired", async () => {

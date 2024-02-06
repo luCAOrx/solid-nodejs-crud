@@ -5,7 +5,7 @@ import { type User } from "@domain/entities/user/user";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
 import { DeleteUserUseCase } from "./delete-user-use-case";
 
 describe("Delete user use case", () => {
@@ -31,6 +31,6 @@ describe("Delete user use case", () => {
   it("should not be able to delete non-existent user", async () => {
     await rejects(async () => {
       await deleteUserUseCase.execute({ id: "1234567890" });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 });

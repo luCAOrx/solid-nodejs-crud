@@ -1,13 +1,13 @@
 import { deepStrictEqual, ok, rejects } from "node:assert";
 import { describe, it } from "node:test";
+import { ValueObjectErrors } from "src/core/logic/domain/value-object/errors/value-object-errors";
 
 import { User } from "@domain/entities/user/user";
-import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
-import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
 import { RegisterUserUseCase } from "./register-user-use-case";
 
 describe("Register user use case", () => {
@@ -42,7 +42,7 @@ describe("Register user use case", () => {
             password: "123",
           },
         }),
-      NameShouldNotBeEmptyError
+      ValueObjectErrors.ValueObjectShouldNotBeEmptyError
     );
   });
 
@@ -54,7 +54,7 @@ describe("Register user use case", () => {
       .then(async ({ props }) => {
         await rejects(
           async () => await registerUserUseCase.execute(props),
-          UserAlreadyExistsError
+          GlobalUseCaseErrors.UserAlreadyExistsError
         );
       });
   });

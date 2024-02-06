@@ -8,8 +8,8 @@ import { InMemoryRefreshTokenDatabase } from "@test/in-memory-database/in-memory
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
-import { AuthenticateUserUseCase } from "./authenticate-user-use-case";
-import { InvalidEmailOrPasswordError } from "./errors/invalid-email-or-password-error";
+import AuthenticateUserUseCase from "./authenticate-user-use-case";
+import { AuthenticateUserUseCaseErrors } from "./errors/authenticate-user-use-case-errors";
 
 describe("Authenticate user use case", () => {
   const inMemoryUserDatabase = new InMemoryUserDatabase();
@@ -84,7 +84,7 @@ describe("Authenticate user use case", () => {
         email: "frank@example.com",
         password: "1234567890",
       });
-    }, InvalidEmailOrPasswordError);
+    }, AuthenticateUserUseCaseErrors.InvalidEmailOrPasswordError);
   });
 
   it("should not be able authenticate if provided password not equal that user password", async () => {
@@ -93,6 +93,6 @@ describe("Authenticate user use case", () => {
         email: user.props.email,
         password: "123456789012312",
       });
-    }, InvalidEmailOrPasswordError);
+    }, AuthenticateUserUseCaseErrors.InvalidEmailOrPasswordError);
   });
 });

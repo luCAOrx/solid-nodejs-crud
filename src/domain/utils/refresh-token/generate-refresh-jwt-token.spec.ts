@@ -1,7 +1,7 @@
 import { deepStrictEqual, rejects } from "node:assert";
 import { describe, it } from "node:test";
 
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryRefreshTokenDatabase } from "@test/in-memory-database/in-memory-refresh-token-database";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
@@ -44,6 +44,6 @@ describe("Generate refresh jwt token", () => {
       await generateRefreshJwtToken.execute({
         userId: "12345678901234567890",
       });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 });

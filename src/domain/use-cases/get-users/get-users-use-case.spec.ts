@@ -8,8 +8,8 @@ import {
 } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { AccessDeniedError } from "./errors/access-denied-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { GetUsersUseCaseErrors } from "./errors/get-users-use-case-errors";
 import { GetUsersUseCase } from "./get-users-use-case";
 
 describe("Get users use case", () => {
@@ -50,13 +50,13 @@ describe("Get users use case", () => {
   it("should not be able to list users if user not found", async () => {
     await rejects(async () => {
       await getUsersUseCase.execute({ id: "1234567890" });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 
   it("should not be able to list users if role is common", async () => {
     await rejects(async () => {
       await getUsersUseCase.execute({ id: commonUser.id });
-    }, AccessDeniedError);
+    }, GetUsersUseCaseErrors.AccessDeniedError);
   });
 
   it("should be able paginate", async () => {

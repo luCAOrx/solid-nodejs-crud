@@ -6,8 +6,8 @@ import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { UserMailAdapter } from "@test/utils/user-mail-adapter";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { UnableToSendPasswordRecoveryEmailError } from "./errors/unable-to-send-password-recovery-email-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { ForgotPasswordUseCaseErrors } from "./errors/forgot-password-use-case-errors";
 import { ForgotPasswordUseCase } from "./forgot-password-use-case";
 
 describe("Forgot password use case", () => {
@@ -40,16 +40,16 @@ describe("Forgot password use case", () => {
   it("should not be able to send an email to recover the password if the user's email is not found", async () => {
     await rejects(async () => {
       await forgotPasswordUseCase.execute({ email: "fake@email.com" });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 
   it("should not be able to send email to recover password if sending email fails to send email", async () => {
     userMailAdapter.sendMail = async () => {
-      throw new UnableToSendPasswordRecoveryEmailError();
+      throw new ForgotPasswordUseCaseErrors.UnableToSendPasswordRecoveryEmailError();
     };
 
     await rejects(async () => {
       await forgotPasswordUseCase.execute({ email: user.props.email });
-    }, UnableToSendPasswordRecoveryEmailError);
+    }, ForgotPasswordUseCaseErrors.UnableToSendPasswordRecoveryEmailError);
   });
 });

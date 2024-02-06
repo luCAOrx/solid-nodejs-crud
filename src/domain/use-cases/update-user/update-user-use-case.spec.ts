@@ -1,15 +1,14 @@
 import { deepStrictEqual, rejects, ok } from "node:assert";
 import { describe, it, before } from "node:test";
+import { ValueObjectErrors } from "src/core/logic/domain/value-object/errors/value-object-errors";
 
 import { User } from "@domain/entities/user/user";
-import { NameShouldNotBeEmptyError } from "@domain/validations/name/errors/name-should-not-be-empty-error";
 import { MakeUserFactory } from "@test/factories/make-user-factory";
 import { InMemoryUserDatabase } from "@test/in-memory-database/in-memory-user-database";
 import { UserSecurityProvider } from "@test/utils/user-security-provider";
 
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
-import { TheCurrentPasswordIsInvalidError } from "./erros/the-current-password-is-invalid-error";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { UpdateUserUseCaseErrors } from "./erros/update-user-use-case-errors";
 import { UpdateUserUseCase } from "./update-user-use-case";
 
 describe("Update user use case", () => {
@@ -178,7 +177,7 @@ describe("Update user use case", () => {
           newPassword: "updatedPassword",
         },
       });
-    }, UserNotFoundError);
+    }, GlobalUseCaseErrors.UserNotFoundError);
   });
 
   it("should not be able update user with invalid data", async () => {
@@ -193,7 +192,7 @@ describe("Update user use case", () => {
           newPassword: "updatedPassword",
         },
       });
-    }, NameShouldNotBeEmptyError);
+    }, ValueObjectErrors.ValueObjectShouldNotBeEmptyError);
   });
 
   it("should not be able update user with existing email", async () => {
@@ -207,7 +206,7 @@ describe("Update user use case", () => {
           newPassword: "updatedPassword",
         },
       });
-    }, UserAlreadyExistsError);
+    }, GlobalUseCaseErrors.UserAlreadyExistsError);
   });
 
   it("should not be able update user if current password is invalid", async () => {
@@ -220,6 +219,6 @@ describe("Update user use case", () => {
           newPassword: "updatedPassword",
         },
       });
-    }, TheCurrentPasswordIsInvalidError);
+    }, UpdateUserUseCaseErrors.TheCurrentPasswordIsInvalidError);
   });
 });
