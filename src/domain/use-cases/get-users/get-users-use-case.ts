@@ -1,9 +1,9 @@
 import { type User } from "@domain/entities/user/user";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { AccessDeniedError } from "./errors/access-denied-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { GetUsersUseCaseErrors } from "./errors/get-users-use-case-errors";
 
 interface GetUsersRequest {
   id: string;
@@ -11,21 +11,20 @@ interface GetUsersRequest {
   takePage?: number;
 }
 
-export class GetUsersUseCase extends BaseUseCase<GetUsersRequest, User[]> {
-  constructor(private readonly userRepository: UserRepository) {
-    super();
-  }
+export class GetUsersUseCase implements BaseUseCase<GetUsersRequest, User[]> {
+  constructor(private readonly userRepository: UserRepository) {}
 
-  protected async execute({
+  async execute({
     id,
     page = 1,
     takePage = 5,
   }: GetUsersRequest): Promise<User[]> {
     const user = await this.userRepository.findById(id);
 
-    if (user === null) throw new UserNotFoundError();
+    if (user === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
-    if (user.props.role !== "ADMIN") throw new AccessDeniedError();
+    if (user.props.role !== "ADMIN")
+      throw new GetUsersUseCaseErrors.AccessDeniedError();
 
     const usersOrUser = await this.userRepository.findMany(page, takePage);
 

@@ -8,8 +8,8 @@ import { type UserRepository } from "@domain/repositories/user-repository";
 import { GenerateJwtToken } from "@domain/utils/jwt-token/generate-jwt-token";
 import { GenerateRefreshToken } from "@domain/utils/refresh-token/generate-refresh-jwt-token";
 
-import { BaseUseCase } from "../base-use-case";
-import { InvalidEmailOrPasswordError } from "./errors/invalid-email-or-password-error";
+import { type BaseUseCase } from "../base-use-case";
+import { AuthenticateUserUseCaseErrors } from "./errors/authenticate-user-use-case-errors";
 
 interface AuthenticateUserRequest {
   email: string;
@@ -22,32 +22,31 @@ interface AuthenticateUserResponse {
   refreshToken: RefreshTokenProps;
 }
 
-export class AuthenticateUserUseCase extends BaseUseCase<
-  AuthenticateUserRequest,
-  AuthenticateUserResponse
-> {
+export default class AuthenticateUserUseCase
+  implements BaseUseCase<AuthenticateUserRequest, AuthenticateUserResponse>
+{
   constructor(
     private readonly userRepository: UserRepository,
     private readonly securityProvider: SecurityProvider,
     private readonly refreshTokenRepository: RefreshTokenRepository
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     email,
     password,
   }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
     const userOrNull = await this.userRepository.findByEmail(email);
 
-    if (userOrNull === null) throw new InvalidEmailOrPasswordError();
+    if (userOrNull === null)
+      throw new AuthenticateUserUseCaseErrors.InvalidEmailOrPasswordError();
 
     const isPasswordSameSaveInDatabase = await this.securityProvider.compare({
       password,
       hashedPassword: userOrNull.props.password,
     });
 
-    if (!isPasswordSameSaveInDatabase) throw new InvalidEmailOrPasswordError();
+    if (!isPasswordSameSaveInDatabase)
+      throw new AuthenticateUserUseCaseErrors.InvalidEmailOrPasswordError();
 
     const refreshTokenAlreadyExists = await this.refreshTokenRepository.exists(
       userOrNull.id

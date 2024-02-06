@@ -6,37 +6,34 @@ import { User } from "@domain/entities/user/user";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
 
-interface CreateUserRequest {
+interface RegisterUserRequest {
   name: string;
   job: string;
   email: string;
   password: string;
 }
 
-interface CreateUserResponse {
+interface RegisterUserResponse {
   user: User;
 }
 
-export class RegisterUserUseCase extends BaseUseCase<
-  CreateUserRequest,
-  CreateUserResponse
-> {
+export class RegisterUserUseCase
+  implements BaseUseCase<RegisterUserRequest, RegisterUserResponse>
+{
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     name,
     email,
     job,
     password,
-  }: CreateUserRequest): Promise<CreateUserResponse> {
+  }: RegisterUserRequest): Promise<RegisterUserResponse> {
     const nameOrError = Name.create(name);
     const jobOrError = Job.create(job);
     const emailOrError = Email.create(email);
@@ -59,7 +56,8 @@ export class RegisterUserUseCase extends BaseUseCase<
       user.props.email
     );
 
-    if (userAlreadyExists) throw new UserAlreadyExistsError();
+    if (userAlreadyExists)
+      throw new GlobalUseCaseErrors.UserAlreadyExistsError();
 
     await this.userRepository.create(user);
 

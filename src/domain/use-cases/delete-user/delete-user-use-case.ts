@@ -1,21 +1,19 @@
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserNotFoundError } from "../errors/user-not-found-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
 
 interface DeleteUserRequest {
   id: string;
 }
 
-export class DeleteUserUseCase extends BaseUseCase<DeleteUserRequest, void> {
-  constructor(private readonly userRepository: UserRepository) {
-    super();
-  }
+export class DeleteUserUseCase implements BaseUseCase<DeleteUserRequest, void> {
+  constructor(private readonly userRepository: UserRepository) {}
 
-  protected async execute({ id }: DeleteUserRequest): Promise<void> {
+  async execute({ id }: DeleteUserRequest): Promise<void> {
     const user = await this.userRepository.findById(id);
 
-    if (user === null) throw new UserNotFoundError();
+    if (user === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
     await this.userRepository.delete(user.id);
   }

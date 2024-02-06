@@ -6,10 +6,9 @@ import { User } from "@domain/entities/user/user";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { UserAlreadyExistsError } from "../register-user/errors/user-already-exists-error";
-import { TheCurrentPasswordIsInvalidError } from "./erros/the-current-password-is-invalid-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { UpdateUserUseCaseErrors } from "./erros/update-user-use-case-errors";
 
 interface UpdateUserRequest {
   id: string;
@@ -26,28 +25,25 @@ interface UpdateUserResponse {
   updatedUser: User;
 }
 
-export class UpdateUserUseCase extends BaseUseCase<
-  UpdateUserRequest,
-  UpdateUserResponse
-> {
+export class UpdateUserUseCase
+  implements BaseUseCase<UpdateUserRequest, UpdateUserResponse>
+{
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     id,
     data: { name, job, email, currentPassword, newPassword },
   }: UpdateUserRequest): Promise<UpdateUserResponse> {
     const userFound = await this.userRepository.findById(id);
     const userAlreadyExists = await this.userRepository.exists(email);
 
-    if (userFound === null) throw new UserNotFoundError();
+    if (userFound === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
     if (email !== userFound.props.email && userAlreadyExists)
-      throw new UserAlreadyExistsError();
+      throw new GlobalUseCaseErrors.UserAlreadyExistsError();
 
     const isPasswordSameSaveInDatabase =
       await this.userSecurityProvider.compare({
@@ -56,7 +52,7 @@ export class UpdateUserUseCase extends BaseUseCase<
       });
 
     if (!isPasswordSameSaveInDatabase)
-      throw new TheCurrentPasswordIsInvalidError();
+      throw new UpdateUserUseCaseErrors.TheCurrentPasswordIsInvalidError();
 
     const nameOrError = Name.create(name);
     const jobOrError = Job.create(job);

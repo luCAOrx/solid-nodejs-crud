@@ -7,8 +7,8 @@ import { type UserRepository } from "@domain/repositories/user-repository";
 import { GenerateJwtToken } from "@domain/utils/jwt-token/generate-jwt-token";
 import { GenerateRefreshToken } from "@domain/utils/refresh-token/generate-refresh-jwt-token";
 
-import { BaseUseCase } from "../base-use-case";
-import { RefreshTokenNotFoundError } from "./errors/refresh-token-not-found-error";
+import { type BaseUseCase } from "../base-use-case";
+import { RefreshJwtTokenUseCaseErrors } from "./errors/refresh-jwt-token-use-case-errors";
 
 interface RefreshJwtTokenRequest {
   refreshTokenId: string;
@@ -19,26 +19,24 @@ interface RefreshJwtTokenResponse {
   token: string;
 }
 
-export class RefreshJwtTokenUseCase extends BaseUseCase<
-  RefreshJwtTokenRequest,
-  RefreshJwtTokenResponse
-> {
+export class RefreshJwtTokenUseCase
+  implements BaseUseCase<RefreshJwtTokenRequest, RefreshJwtTokenResponse>
+{
   constructor(
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly userRepository: UserRepository,
     private readonly securityProvider: SecurityProvider
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     refreshTokenId,
   }: RefreshJwtTokenRequest): Promise<RefreshJwtTokenResponse> {
     const refreshTokenFound = await this.refreshTokenRepository.findById(
       refreshTokenId
     );
 
-    if (refreshTokenFound === null) throw new RefreshTokenNotFoundError();
+    if (refreshTokenFound === null)
+      throw new RefreshJwtTokenUseCaseErrors.RefreshTokenNotFoundError();
 
     const dateFromTimestamp = new Date(refreshTokenFound.expiresIn * 1000);
     const currentDate = new Date();

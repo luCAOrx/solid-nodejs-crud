@@ -2,11 +2,9 @@ import { Password } from "@domain/entities/password/password";
 import { type SecurityProvider } from "@domain/providers/security-provider";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { InvalidCodeToResetPasswordError } from "./errors/invalid-code-to-reset-password-error";
-import { PasswordResetTokenHasExpiredError } from "./errors/password-reset-token-has-expired-error";
-import { PasswordsDoNotMatchError } from "./errors/passwords-do-not-match-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { ResetPasswordUseCaseErrors } from "./errors/reset-password-use-case-errors";
 
 interface ResetPasswordRequest {
   email: string;
@@ -19,18 +17,15 @@ interface ResetPasswordResponse {
   message: string;
 }
 
-export class ResetPasswordUseCase extends BaseUseCase<
-  ResetPasswordRequest,
-  ResetPasswordResponse
-> {
+export class ResetPasswordUseCase
+  implements BaseUseCase<ResetPasswordRequest, ResetPasswordResponse>
+{
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userSecurityProvider: SecurityProvider
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     code,
     confirmPassword,
     email,
@@ -38,11 +33,10 @@ export class ResetPasswordUseCase extends BaseUseCase<
   }: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     const userFound = await this.userRepository.findByEmail(email);
 
-    if (userFound === null) throw new UserNotFoundError();
+    if (userFound === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
     if (code !== userFound.password_reset_token)
-      throw new InvalidCodeToResetPasswordError();
-
+      throw new ResetPasswordUseCaseErrors.InvalidCodeToResetPasswordError();
     const currentDate = new Date();
 
     function removeMinutesAndMilliseconds(date: Date): Date {
@@ -62,12 +56,12 @@ export class ResetPasswordUseCase extends BaseUseCase<
       passwordResetTokenExpirationWithoutMinutesAndMilliseconds;
 
     if (passwordResetTokenHasExpired)
-      throw new PasswordResetTokenHasExpiredError();
+      throw new ResetPasswordUseCaseErrors.PasswordResetTokenHasExpiredError();
 
     const passwordOrError = Password.create(newPassword);
 
     if (passwordOrError.value !== confirmPassword)
-      throw new PasswordsDoNotMatchError();
+      throw new ResetPasswordUseCaseErrors.PasswordsDoNotMatchError();
 
     const hashedPassword = await this.userSecurityProvider.hash({
       password: passwordOrError.value,

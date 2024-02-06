@@ -3,9 +3,9 @@ import { randomBytes } from "node:crypto";
 import { type MailAdapter } from "@domain/adapters/mail-adapter";
 import { type UserRepository } from "@domain/repositories/user-repository";
 
-import { BaseUseCase } from "../base-use-case";
-import { UserNotFoundError } from "../errors/user-not-found-error";
-import { UnableToSendPasswordRecoveryEmailError } from "./errors/unable-to-send-password-recovery-email-error";
+import { type BaseUseCase } from "../base-use-case";
+import { GlobalUseCaseErrors } from "../global-errors/global-use-case-errors";
+import { ForgotPasswordUseCaseErrors } from "./errors/forgot-password-use-case-errors";
 
 interface ForgotPasswordRequest {
   email: string;
@@ -15,23 +15,20 @@ interface ForgotPasswordResponse {
   message: string;
 }
 
-export class ForgotPasswordUseCase extends BaseUseCase<
-  ForgotPasswordRequest,
-  ForgotPasswordResponse
-> {
+export class ForgotPasswordUseCase
+  implements BaseUseCase<ForgotPasswordRequest, ForgotPasswordResponse>
+{
   constructor(
     private readonly userRepository: UserRepository,
     private readonly mailAdapter: MailAdapter
-  ) {
-    super();
-  }
+  ) {}
 
-  protected async execute({
+  async execute({
     email,
   }: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     const userFound = await this.userRepository.findByEmail(email);
 
-    if (userFound === null) throw new UserNotFoundError();
+    if (userFound === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
     const passwordResetToken = randomBytes(5).toString("hex");
 
@@ -64,7 +61,7 @@ export class ForgotPasswordUseCase extends BaseUseCase<
           "A code so you can reset your password has been sent to your email, view your inbox, spam or trash.",
       };
     } catch (error) {
-      throw new UnableToSendPasswordRecoveryEmailError();
+      throw new ForgotPasswordUseCaseErrors.UnableToSendPasswordRecoveryEmailError();
     }
   }
 }

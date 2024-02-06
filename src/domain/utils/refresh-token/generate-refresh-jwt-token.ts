@@ -5,7 +5,7 @@ import {
   type RefreshTokenRepository,
 } from "@domain/repositories/refresh-token-repository";
 import { type UserRepository } from "@domain/repositories/user-repository";
-import { UserNotFoundError } from "@domain/use-cases/errors/user-not-found-error";
+import { GlobalUseCaseErrors } from "@domain/use-cases/global-errors/global-use-case-errors";
 
 interface GenerateRefreshTokenRequest {
   userId: string;
@@ -26,7 +26,7 @@ export class GenerateRefreshToken {
   }: GenerateRefreshTokenRequest): Promise<GenerateRefreshTokenResponse> {
     const userFound = await this.userRepository.findById(userId);
 
-    if (userFound === null) throw new UserNotFoundError();
+    if (userFound === null) throw new GlobalUseCaseErrors.UserNotFoundError();
 
     const fifteenSecondsInUnixTimestamp = new Date().getTime() / 1000 + 15;
 
