@@ -62,10 +62,11 @@ const httpResponseToClientError: Response = {
         },
 
         theFieldNewPasswordShouldBeThan10Characters: {
-          summary: "The field newPassword should be than 10 characters",
+          summary: "The field newPassword should be greater than 10 characters",
           value: {
             statusCode: 400,
-            message: "The field newPassword should be than 10 characters",
+            message:
+              "The field newPassword should be greater than 10 characters",
             error: "Bad request",
           },
         },
