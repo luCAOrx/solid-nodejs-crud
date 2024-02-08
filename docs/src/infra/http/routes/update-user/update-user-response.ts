@@ -64,10 +64,10 @@ const httpResponseToClientError: Response = {
         },
 
         theFieldNameShouldBeThan5Characters: {
-          summary: "The field name should be than 5 characters",
+          summary: "The field name should be greater than 5 characters",
           value: {
             statusCode: 400,
-            message: "The field name should be than 5 characters",
+            message: "The field name should be greater than 5 characters",
             error: "Bad request",
           },
         },
@@ -91,10 +91,10 @@ const httpResponseToClientError: Response = {
         },
 
         theFieldJobShouldBeThan5Characters: {
-          summary: "The field job should be than 5 characters",
+          summary: "The field job should be greater than 5 characters",
           value: {
             statusCode: 400,
-            message: "The field job should be than 5 characters",
+            message: "The field job should be greater than 5 characters",
             error: "Bad request",
           },
         },
@@ -136,10 +136,11 @@ const httpResponseToClientError: Response = {
         },
 
         theFieldNewPasswordShouldBeThan10Characters: {
-          summary: "The field newPassword should be than 10 characters",
+          summary: "The field newPassword should be greater than 10 characters",
           value: {
             statusCode: 400,
-            message: "The field newPassword should be than 10 characters",
+            message:
+              "The field newPassword should be greater than 10 characters",
             error: "Bad request",
           },
         },
