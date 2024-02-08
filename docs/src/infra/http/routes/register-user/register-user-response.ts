@@ -42,11 +42,11 @@ const httpResponseToClientError: Response = {
           },
         },
 
-        theFieldNameShouldBeThan5Characters: {
-          summary: "The field name should be than 5 characters",
+        theFieldNameShouldBeGreaterThan5Characters: {
+          summary: "The field name should be greater than 5 characters",
           value: {
             statusCode: 400,
-            message: "The field name should be than 5 characters",
+            message: "The field name should be greater than 5 characters",
             error: "Bad request",
           },
         },
@@ -56,6 +56,79 @@ const httpResponseToClientError: Response = {
           value: {
             statusCode: 400,
             message: "The field name should be less than 255 characters",
+            error: "Bad request",
+          },
+        },
+
+        theFieldJobShouldNotBeEmpty: {
+          summary: "The field job should not be empty",
+          value: {
+            statusCode: 400,
+            message: "The field job should not be empty",
+            error: "Bad request",
+          },
+        },
+
+        theFieldJobShouldBeGreaterThan5Characters: {
+          summary: "The field job should be greater than 5 characters",
+          value: {
+            statusCode: 400,
+            message: "The field job should be greater than 5 characters",
+            error: "Bad request",
+          },
+        },
+
+        theFieldJobShouldBeLessThan255Characters: {
+          summary: "The field job should be less than 255 characters",
+          value: {
+            statusCode: 400,
+            message: "The field job should be less than 255 characters",
+            error: "Bad request",
+          },
+        },
+
+        theFieldEmailShouldBeValidEmail: {
+          summary: "The field email should be valid email",
+          value: {
+            statusCode: 400,
+            message: "The field email should be valid email",
+            error: "Bad request",
+          },
+        },
+
+        theFieldEmailShouldBeLessThan255Characters: {
+          summary: "The field email should be less than 255 characters",
+          value: {
+            statusCode: 400,
+            message: "The field email should be less than 255 characters",
+            error: "Bad request",
+          },
+        },
+
+        theFieldNewPasswordShouldNotBeEmpty: {
+          summary: "The field newPassword should not be empty",
+          value: {
+            statusCode: 400,
+            message: "The field newPassword should not be empty",
+            error: "Bad request",
+          },
+        },
+
+        theFieldNewPasswordShouldBeGreaterThan5Characters: {
+          summary: "The field newPassword should be greater than 10 characters",
+          value: {
+            statusCode: 400,
+            message:
+              "The field newPassword should be greater than 10 characters",
+            error: "Bad request",
+          },
+        },
+
+        theFieldNewPasswordShouldBeLessThan255Characters: {
+          summary: "The field newPassword should be less than 255 characters",
+          value: {
+            statusCode: 400,
+            message: "The field newPassword should be less than 255 characters",
             error: "Bad request",
           },
         },
