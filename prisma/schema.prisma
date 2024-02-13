@@ -5,14 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Role {
-  ADMIN
-  COMMON
-}
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./test-api-docs.db"
 }
 
 model User {
@@ -22,7 +18,7 @@ model User {
   email                           String         @unique
   password                        String
   read_time                       BigInt
-  role                            Role
+  role                            String 
   password_reset_token            String
   password_reset_token_expiration DateTime
   created_at                      DateTime       @default(now())
