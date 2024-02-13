@@ -1,4 +1,5 @@
 import { describe, before, after } from "node:test";
+import { deleteUserAfterThirtyMinutesEndToEndTest } from "prisma/deleteUserAfterThirtyMinutes.e2e-spec";
 import { PrismaTestEnvironment } from "prisma/prismaTestEnvironment";
 
 import { app } from "@infra/http/app";
@@ -57,6 +58,7 @@ describe("End to end (E2E) tests", () => {
   refreshJwtTokenControllerEndToEndTests();
   forgotPasswordControllerEndToEndTests();
   resetPasswordControllerEndToEndTests();
+  deleteUserAfterThirtyMinutesEndToEndTest();
 
   after(async () => {
     server.close();
