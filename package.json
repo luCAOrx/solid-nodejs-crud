@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Basic CRUD with Node.js using SOLID principles",
   "main": "./src/server.js",
+  "engines": {
+    "node": "18.17.1"
+  },
   "scripts": {
     "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register ./dist/src/infra/http/server.js",
     "start:dev": "tsx watch ./src/infra/http/server.ts",
