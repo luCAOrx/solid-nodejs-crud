@@ -28,6 +28,7 @@ app.use(
   serve,
   setup(swaggerSpec, {
     customSiteTitle: "SOLID Node.JS CRUD",
+    swaggerUrl: String(process.env.DOCUMENTATION_SERVER_URL),
   })
 );
 app.use(registerUserRoute);
