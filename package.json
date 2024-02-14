@@ -4,7 +4,9 @@
   "description": "Basic CRUD with Node.js using SOLID principles",
   "main": "./src/server.js",
   "scripts": {
+    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register ./dist/src/infra/http/server.js",
     "start:dev": "tsx watch ./src/infra/http/server.ts",
+    "build": "tsc",
     "test": "tsx --test ./src/domain/**/**/*.spec.ts",
     "test:e2e": "tsx --test ./test/main.e2e-spec.ts",
     "test:watch": "tsx --test --watch ./src/domain/**/**/*.spec.ts",
@@ -35,6 +37,8 @@
     "pg": "^8.11.0",
     "prettier": "^2.8.8",
     "prisma": "^5.2.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.3"
   },
